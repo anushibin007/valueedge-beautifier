@@ -27,7 +27,7 @@
 			<div class="row">
 				<div class="col">
 					<h2>Features</h2>
-					<h5>Coloured "Phase" badges</h5>
+					<h3>Coloured "Phase" badges</h3>
 					<p>Phases</p>
 					<ul>
 						<li><span class="badge text-bg-secondary">New</span></li>
