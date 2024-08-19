@@ -58,6 +58,29 @@
 				</div>
 			</div>
 			<div class="row">
+				<div class="col-12">
+					<p class="fs-2">Downloads</p>
+				</div>
+				<div class="col-12">
+					<a
+						href="https://chromewebstore.google.com/detail/valueedge-beautifier/adoaldplellihmglmfilbblkjbfobnic"
+					>
+						<img
+							src="https://raw.githubusercontent.com/anushibin007/valueedge-beautifier/master/src/icons/download-chrome-extension.png"
+							style="height: 50px"
+						/>
+					</a>
+				</div>
+				<div class="col-12">
+					<a href="https://addons.mozilla.org/en-US/firefox/addon/valueedge-beautifier/">
+						<img
+							src="https://raw.githubusercontent.com/anushibin007/valueedge-beautifier/master/src/icons/download-firefox-extension.png"
+							style="height: 50px"
+						/>
+					</a>
+				</div>
+			</div>
+			<div class="row">
 				<div class="col">
 					A side project by
 					<a href="https://www.linkedin.com/in/anushibinj/" target="_blank"
