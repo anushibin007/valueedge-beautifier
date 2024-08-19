@@ -51,6 +51,7 @@
 					</ul>
 					<p>Views</p>
 					<ul>
+						<li>Dashboard view</li>
 						<li>Backlog view</li>
 						<li>Team Backlog view</li>
 						<li>Story/Issue view</li>
