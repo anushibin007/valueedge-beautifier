@@ -84,18 +84,22 @@ const beautifyPhaseInTeamBacklogView = () => {
 	// applyBeautification(phaseElements);
 };
 
-window.addEventListener("load", function () {
-	const observer = new MutationObserver((mutationsList, observer) => {
-		beautifyPhaseInUserStoryView();
-		beautifyPhaseInBacklogView();
-		beautifyPhaseInTeamBacklogView();
-	});
+if (!window.__valueEdgeBeautifierInitialized) {
+	// Avoid multiple re-injection
+	window.__valueEdgeBeautifierInitialized = true;
+	window.addEventListener("load", function () {
+		const observer = new MutationObserver((mutationsList, observer) => {
+			beautifyPhaseInUserStoryView();
+			beautifyPhaseInBacklogView();
+			beautifyPhaseInTeamBacklogView();
+		});
 
-	// Start observing the document for changes
-	observer.observe(document.body, { childList: true, subtree: true });
+		// Start observing the document for changes
+		observer.observe(document.body, { childList: true, subtree: true });
 
-	// Disconnect the observer when the page unloads
-	window.addEventListener("unload", function () {
-		observer.disconnect();
+		// Disconnect the observer when the page unloads
+		window.addEventListener("unload", function () {
+			observer.disconnect();
+		});
 	});
-});
+}

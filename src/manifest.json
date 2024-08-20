@@ -14,7 +14,8 @@
 			"css": ["valueedge-beautifier-styles.css"],
 			"js": ["valueedge-beautifier-script.js"],
 			"all_frames": true,
-			"world": "ISOLATED"
+			"world": "ISOLATED",
+			"run_at": "document_end"
 		}
 	],
 	"icons": {
