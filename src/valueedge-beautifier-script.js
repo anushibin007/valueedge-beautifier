@@ -84,6 +84,15 @@ const beautifyPhaseInTeamBacklogView = () => {
 	// applyBeautification(phaseElements);
 };
 
+const addIdToComments = () => {
+	const commentElements = document.querySelectorAll(".alm-entity-form-comment-entry");
+	if (commentElements) {
+		commentElements.forEach((commentElement, index) => {
+			commentElement.id = `comment-${index}`;
+		});
+	}
+};
+
 if (!window.__valueEdgeBeautifierInitialized) {
 	// Avoid multiple re-injection
 	window.__valueEdgeBeautifierInitialized = true;
@@ -92,6 +101,7 @@ if (!window.__valueEdgeBeautifierInitialized) {
 			beautifyPhaseInUserStoryView();
 			beautifyPhaseInBacklogView();
 			beautifyPhaseInTeamBacklogView();
+			addIdToComments();
 		});
 
 		// Start observing the document for changes
