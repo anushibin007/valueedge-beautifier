@@ -62,21 +62,37 @@
 				<div class="col-12">
 					<p class="fs-2">Downloads</p>
 				</div>
-				<div class="col-12">
+				<div class="col-12 mb-2">
 					<a
 						href="https://chromewebstore.google.com/detail/valueedge-beautifier/adoaldplellihmglmfilbblkjbfobnic"
 					>
 						<img
 							src="https://raw.githubusercontent.com/anushibin007/valueedge-beautifier/master/src/icons/download-chrome-extension.png"
 							style="height: 50px"
+							alt="Download Google Chrome Extension"
+							title="Download Google Chrome Extension"
 						/>
 					</a>
 				</div>
-				<div class="col-12">
+				<div class="col-12 mb-2">
 					<a href="https://addons.mozilla.org/en-US/firefox/addon/valueedge-beautifier/">
 						<img
 							src="https://raw.githubusercontent.com/anushibin007/valueedge-beautifier/master/src/icons/download-firefox-extension.png"
 							style="height: 50px"
+							alt="Download Firefox Extension"
+							title="Download Firefox Extension"
+						/>
+					</a>
+				</div>
+				<div class="col-12 mb-2">
+					<a
+						href="https://microsoftedge.microsoft.com/addons/detail/valueedge-beautifier/kljhhfhbldhochicfpdincelcjdgfahm"
+					>
+						<img
+							src="https://raw.githubusercontent.com/anushibin007/valueedge-beautifier/master/src/icons/download-ms-extension.png"
+							style="height: 50px"
+							alt="Download Microsoft Edge Extension"
+							title="Download Microsoft Edge Extension"
 						/>
 					</a>
 				</div>
