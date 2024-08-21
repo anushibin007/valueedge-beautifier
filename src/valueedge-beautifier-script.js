@@ -84,6 +84,65 @@ const beautifyPhaseInTeamBacklogView = () => {
 	// applyBeautification(phaseElements);
 };
 
+// v1.2.0 Feature
+// Beautify labels by adding emojis to the labels.
+// This is to make it easier to find the labels in the ticket view.
+var labelReplacements = [
+	{
+		searchKey: '[title="Legacy ID - (GU)ID of the source system. Set during migration."]',
+		replacement: "👴",
+		replaced: false,
+	},
+	{
+		searchKey: '[title="R&D Product - Name of product this CR applies to"]',
+		replacement: "👨‍💻",
+		replaced: false,
+	},
+	{
+		searchKey: '[title="Detected In Release"]',
+		replacement: "🐛",
+		replaced: false,
+	},
+	{
+		searchKey: '[title="Target Release"]',
+		replacement: "🚢",
+		replaced: false,
+	},
+	{
+		searchKey: '[title="Sprint"]',
+		replacement: "🏃‍♂️",
+		replaced: false,
+	},
+	{
+		searchKey: '[title="Creation time"]',
+		replacement: "🐣",
+		replaced: false,
+	},
+];
+
+const beautifyLabel = (query, replacement) => {
+	const labelElements = document.querySelectorAll(query);
+	labelElements?.forEach((labelElement) => {
+		// Start the label with the emoji
+		labelElement.innerHTML = `${replacement} ${labelElement.innerHTML}`;
+	});
+	if (labelElements?.length > 0) {
+		return true;
+	} else {
+		return false;
+	}
+};
+
+const beautifyLabels = () => {
+	labelReplacements.forEach((aReplacement) => {
+		if (aReplacement.replaced) {
+			return;
+		}
+		const replaced = beautifyLabel(aReplacement.searchKey, aReplacement.replacement);
+		aReplacement.replaced = replaced;
+	});
+};
+
 if (!window.__valueEdgeBeautifierInitialized) {
 	// Avoid multiple re-injection
 	window.__valueEdgeBeautifierInitialized = true;
@@ -92,6 +151,9 @@ if (!window.__valueEdgeBeautifierInitialized) {
 			beautifyPhaseInUserStoryView();
 			beautifyPhaseInBacklogView();
 			beautifyPhaseInTeamBacklogView();
+
+			// Make the labels in the ticket view more appealing and easier to find
+			beautifyLabels();
 		});
 
 		// Start observing the document for changes
