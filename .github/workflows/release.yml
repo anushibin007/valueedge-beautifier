@@ -18,15 +18,6 @@ jobs:
             - name: Zip the src folder
               run: cd src && zip -r valueedge-beautifier-${{ env.RELEASE_VERSION }}.zip .
 
-            # - name: Upload release asset
-            #   uses: actions/upload-release-asset@v1
-            #   with:
-            #       upload_url: ${{ github.event.release.upload_url }}
-            #       asset_path: ./src/valueedge-beautifier-${{ env.RELEASE_VERSION }}.zip
-            #       asset_name: valueedge-beautifier-${{ env.RELEASE_VERSION }}.zip
-            #       asset_content_type: application/zip
-            #   env:
-            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: Upload release asset
               uses: softprops/action-gh-release@v2
               with:
