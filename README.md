@@ -56,6 +56,33 @@
 						<li>Team Backlog view</li>
 						<li>Story/Issue view</li>
 					</ul>
+					<h3>2. Icons for frequently used fields</h3>
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>Old field label</th>
+								<th>New field label</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Detected In Release</td>
+								<td>🐛 Detected In Release</td>
+							</tr>
+							<tr>
+								<td>Target Release</td>
+								<td>🚢 Target Release</td>
+							</tr>
+							<tr>
+								<td>Sprint</td>
+								<td>🏃‍♂️ Sprint</td>
+							</tr>
+							<tr>
+								<td>Creation time</td>
+								<td>🐣 Creation time</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
 			<div class="row">
