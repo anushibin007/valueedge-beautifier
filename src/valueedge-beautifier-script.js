@@ -13,9 +13,9 @@ const getBadgeClassForPhase = (phaseText) => {
 	} else if (phaseText.includes("In Progress")) {
 		return "text-bg-warning";
 	} else if (phaseText.includes("Code Review")) {
-		return "text-bg-warning";
+		return "text-bg-pink";
 	} else if (phaseText.includes("In Testing")) {
-		return "text-bg-warning";
+		return "text-bg-pink";
 	} else if (phaseText.includes("Tested")) {
 		return "text-bg-info";
 	} else if (phaseText.includes("Implemented")) {
