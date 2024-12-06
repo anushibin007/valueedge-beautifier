@@ -1,2 +1,3 @@
 -   [ ] The "Metaphase" field should also show colours similar to that of the "Phase" field
 -   [ ] Highlight the current user's username wherever it appears on the page. For example, in the Owner field, Author field, etc.
+-   [ ] The copy link button just has an icon now. Add a text (like "Share") next to it to highlight its significance.
