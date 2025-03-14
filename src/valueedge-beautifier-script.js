@@ -146,17 +146,40 @@ const beautifyLabels = () => {
 // v1.2.2 Feature
 // ChatGPT generated function to add a paste button to the login page.
 const pasteButtonInLogin = () => {
+	// handbrake to avoid infinite attempts
+	if (window.__valueEdgeBeautifierPasteButtonInLoginAttempted) {
+		console.log("pasteButtonInLoginAttempted. not attempting again.");
+		return;
+	}
+	window.__valueEdgeBeautifierPasteButtonInLoginAttempted = true;
+	console.log("ve-beautifier - starting addPasteButton");
 	function addPasteButton() {
-		console.log("starting addPasteButton");
 		let inputField = document.getElementById("nffc");
-		if (!inputField) return;
+
+		// In the new UI, the input field is called smartphoneOTP
+		// Attempt to get that field.
+		if (!inputField) {
+			inputField = document.getElementById("smartphoneOTP");
+		}
+
+		// If we got no field, just exit.
+		if (!inputField) {
+			console.log("inputField not found. exiting script.");
+			return;
+		}
 
 		// Ensure button isn't added multiple times
-		if (document.getElementById("paste-btn")) return;
+		if (document.getElementById("paste-btn")) {
+			console.log("paste-btn already exists. exiting script.");
+			return;
+		}
 
 		// Find the factor-toggle div
 		let toggleDiv = document.querySelector(".factor-toggle");
-		if (!toggleDiv) return;
+		if (!toggleDiv) {
+			console.log("factor-toggle not found. exiting script.");
+			return;
+		}
 
 		// Create a new div for Paste
 		let pasteDiv = document.createElement("div");
@@ -189,6 +212,7 @@ const pasteButtonInLogin = () => {
 
 		// Insert after the existing factor-toggle div
 		toggleDiv.parentNode.insertBefore(pasteDiv, toggleDiv.nextSibling);
+		console.log("ve-beautifier - ending addPasteButton");
 	}
 
 	// Call it once to see if it runs during invocation itself
