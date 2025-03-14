@@ -143,7 +143,74 @@ const beautifyLabels = () => {
 	});
 };
 
+// ChatGPT generated function to add a paste button to the login page.
+const pasteButtonInLogin = () => {
+	function addPasteButton() {
+		console.log("starting addPasteButton");
+		let inputField = document.getElementById("nffc");
+		if (!inputField) return;
+
+		// Ensure button isn't added multiple times
+		if (document.getElementById("paste-btn")) return;
+
+		// Find the factor-toggle div
+		let toggleDiv = document.querySelector(".factor-toggle");
+		if (!toggleDiv) return;
+
+		// Create a new div for Paste
+		let pasteDiv = document.createElement("div");
+		pasteDiv.className = "factor-toggle"; // Same class as Show/Hide button
+		pasteDiv.id = "paste-btn";
+		pasteDiv.style.marginTop = "5px";
+
+		// Create the clickable text inside the div
+		let pasteLink = document.createElement("a");
+		pasteLink.innerText = "Paste from clipboard";
+		pasteLink.href = "#";
+		pasteLink.style.cursor = "pointer";
+
+		// Add click event to paste text
+		pasteLink.addEventListener("click", async (event) => {
+			event.preventDefault(); // Prevents page navigation
+			try {
+				const text = await navigator.clipboard.readText();
+				inputField.value = text;
+			} catch (err) {
+				alert(
+					"Clipboard access denied. Please allow permissions from the page settings in your browser."
+				);
+				console.error("Clipboard error:", err);
+			}
+		});
+
+		// Append the link inside the new div
+		pasteDiv.appendChild(pasteLink);
+
+		// Insert after the existing factor-toggle div
+		toggleDiv.parentNode.insertBefore(pasteDiv, toggleDiv.nextSibling);
+	}
+
+	// Call it once to see if it runs during invocation itself
+	addPasteButton();
+
+	// Run after the page loads
+	document.addEventListener("DOMContentLoaded", addPasteButton);
+};
+
+// These scripts don't need a mutation observer.
+// They simply need to be run in the auth page.
+const runAuthRelatedScripts = () => {
+	if (!window.location.href.includes("aaf.opentext.com")) {
+		console.log("not running runAuthRelatedScripts");
+		return;
+	}
+	pasteButtonInLogin();
+};
+
 if (!window.__valueEdgeBeautifierInitialized) {
+	// Scripts that don't need a mutation oberver
+	runAuthRelatedScripts();
+
 	// Avoid multiple re-injection
 	window.__valueEdgeBeautifierInitialized = true;
 	window.addEventListener("load", function () {
