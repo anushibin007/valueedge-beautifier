@@ -143,6 +143,7 @@ const beautifyLabels = () => {
 	});
 };
 
+// v1.2.2 Feature
 // ChatGPT generated function to add a paste button to the login page.
 const pasteButtonInLogin = () => {
 	function addPasteButton() {

@@ -83,6 +83,12 @@
 							</tr>
 						</tbody>
 					</table>
+					<p class="fs-4">3. Convenient "Paste from clipboard" button for OTP</p>
+					<p>
+						Now, when entering your OTP into the authentication prompt, you can choose
+						to paste the content that you just copied from the authenticator. A small
+						button appears in the GUI for the same.
+					</p>
 				</div>
 			</div>
 			<div class="row">
