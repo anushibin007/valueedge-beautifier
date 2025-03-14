@@ -2,3 +2,4 @@
 -   [ ] Highlight the current user's username wherever it appears on the page. For example, in the Owner field, Author field, etc.
 -   [ ] The copy link button just has an icon now. Add a text (like "Share") next to it to highlight its significance.
 -   [x] Get a paste button next to the OTP field.
+-   [ ] Change the button to "Paste and Next" instead of just "Paste from clipboard".
