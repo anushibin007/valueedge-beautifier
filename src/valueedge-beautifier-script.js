@@ -238,14 +238,25 @@ if (!window.__valueEdgeBeautifierInitialized) {
 
 	// Avoid multiple re-injection
 	window.__valueEdgeBeautifierInitialized = true;
+
+	// Somtimes, the beautification runs into a forever loop.
+	// To avoid that, let's use an attempt counter.
+	if (!window.__valueEdgeBeautifierBeautificationAttempts) {
+		window.__valueEdgeBeautifierBeautificationAttempts = 0;
+	}
+
 	window.addEventListener("load", function () {
 		const observer = new MutationObserver((mutationsList, observer) => {
-			beautifyPhaseInUserStoryView();
-			beautifyPhaseInBacklogView();
-			beautifyPhaseInTeamBacklogView();
+			// Attempt to look for changes in the DOM only 10 times
+			if (window.__valueEdgeBeautifierBeautificationAttempts <= 10) {
+				beautifyPhaseInUserStoryView();
+				beautifyPhaseInBacklogView();
+				beautifyPhaseInTeamBacklogView();
 
-			// Make the labels in the ticket view more appealing and easier to find
-			beautifyLabels();
+				// Make the labels in the ticket view more appealing and easier to find
+				beautifyLabels();
+				window.__valueEdgeBeautifierBeautificationAttempts++;
+			}
 		});
 
 		// Start observing the document for changes
