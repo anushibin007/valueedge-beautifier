@@ -232,6 +232,101 @@ const runAuthRelatedScripts = () => {
 	pasteButtonInLogin();
 };
 
+/**
+ * ********************** SIDEBAR TOGGLE SCRIPT STARTS **********************
+ */
+const addSidbarToggleButton = () => {
+	// 1. Select the original <search-widget>
+	const existingSearchBtnWidget = document.querySelector(
+		"search-widget.header-search-widget.masthead-search.major"
+	);
+
+	// 2. Return if the original widget is not found
+	if (!existingSearchBtnWidget) {
+		return;
+	}
+
+	// 3. Check if your custom div already exists (by unique class or id)
+	if (document.querySelector(".sidebar-toggle-widget-div")) {
+		// Already present; do nothing
+		return;
+	}
+
+	// 4. Create the new div and button
+	const toggleSideBarDiv = document.createElement("div");
+	toggleSideBarDiv.className = "sidebar-toggle-widget-div"; // Unique class for identification and styling
+
+	const toggleSidebarBtn = document.createElement("button");
+	toggleSidebarBtn.textContent = "Toggle Sidebar"; // Set button text
+	toggleSidebarBtn.className = "sidebar-toggle-btn"; // Optional: add a class for styling
+
+	// Add an onclick handler
+	toggleSidebarBtn.onclick = function () {
+		toggleDrawerAndPanel();
+	};
+
+	// 5. Add the button to the div
+	toggleSideBarDiv.appendChild(toggleSidebarBtn);
+
+	// 6. Insert the new div before the original widget
+	existingSearchBtnWidget.parentNode.insertBefore(toggleSideBarDiv, existingSearchBtnWidget);
+
+	// 7. Optionally, shift the div 10px to the left for visual distinction
+	// newDiv.style.position = "relative";
+	// newDiv.style.left = "-10px";
+};
+
+// Persistent cache variables
+let cachedDrawerStyle = null;
+let cachedPanelWidth = null;
+let styleIsActive = true; // Tracks current toggle state
+
+const toggleDrawerAndPanel = () => {
+	// 1. Toggle the drawer style attribute
+	const drawer = document.querySelector(".uxa-drawer.uxa-open.uxa-placement-end");
+	if (!drawer) {
+		// console.log("Drawer not found!");
+		return;
+	}
+
+	// 2. Toggle the panel-content width
+	const panel = document.querySelector('div[data-aid="panel-content"].panel-content');
+	if (!panel) {
+		// console.log("Panel content not found!");
+		return;
+	}
+
+	if (styleIsActive) {
+		// --- Drawer: Cache and remove style ---
+		cachedDrawerStyle = drawer.getAttribute("style");
+		drawer.setAttribute("style", "");
+
+		// --- Panel: Cache and set width to 100% ---
+		cachedPanelWidth = panel.style.width; // Only the inline width
+		panel.style.width = "100%";
+
+		styleIsActive = false;
+	} else {
+		// --- Drawer: Restore style ---
+		if (cachedDrawerStyle !== null) {
+			drawer.setAttribute("style", cachedDrawerStyle);
+		}
+
+		// --- Panel: Restore width ---
+		if (cachedPanelWidth !== null) {
+			panel.style.width = cachedPanelWidth;
+		} else {
+			panel.style.removeProperty("width");
+		}
+
+		styleIsActive = true;
+	}
+};
+
+/**
+ * ********************** SIDEBAR TOGGLE SCRIPT ENDS **********************
+ */
+
 if (!window.__valueEdgeBeautifierInitialized) {
 	// Scripts that don't need a mutation oberver
 	runAuthRelatedScripts();
@@ -255,6 +350,7 @@ if (!window.__valueEdgeBeautifierInitialized) {
 
 				// Make the labels in the ticket view more appealing and easier to find
 				beautifyLabels();
+				addSidbarToggleButton();
 				window.__valueEdgeBeautifierBeautificationAttempts++;
 			}
 		});
