@@ -89,6 +89,13 @@
 						to paste the content that you just copied from the authenticator. A small
 						button appears in the GUI for the same.
 					</p>
+					<p class="fs-4">4. "Toggle sidebar" button</p>
+					<p>
+						Are you tired of the frustrating right side panel that is so tiny to ready
+						anything and doesn't resize to the full width of the page? Well, now you can
+						just hit the "Toggle sidebar" button and expand the sidebar to the full
+						width!
+					</p>
 				</div>
 			</div>
 			<div class="row">
