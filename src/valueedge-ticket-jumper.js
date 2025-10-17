@@ -167,6 +167,10 @@ class TicketJumper {
 				const searchData = data.data[0];
 
 				const ticketGlobalId = searchData.id;
+
+				// Since we are on the same domain, we can construct the URL directly.
+				// This extension is scoped to be used within ValueEdge only. You can't
+				// even open the extension popup on other domains.
 				const baseUrl =
 					window.location.origin + window.location.pathname + window.location.search;
 				const targetUrl = `${baseUrl}#/entity-navigation?entityType=${this.getEntityType(
