@@ -96,6 +96,15 @@
 						just hit the "Toggle sidebar" button and expand the sidebar to the full
 						width!
 					</p>
+					<p class="fs-4">5. "Jump to ticket" popup</p>
+					<p>
+						If you are familiar with the ve-inator project and use it frequently to jump
+						to tickets, you can now use the power of ve-inator using this extension.
+						Simply trigger the popup using the "Alt + V" hotkey and add the root URL of
+						the ve-inator backend endpoint to the extension. Then jump to tickets from
+						within ValueEdge itself. No more jumping between tools. Jump to your tickets
+						directly.
+					</p>
 				</div>
 			</div>
 			<div class="row">
