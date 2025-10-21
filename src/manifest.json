@@ -1,6 +1,6 @@
 {
 	"name": "ValueEdge Beautifier",
-	"version": "2.0.0",
+	"version": "2.1.0",
 	"description": "Beautify your ValueEdge GUI with better UX components",
 	"manifest_version": 3,
 	"author": "Anu Shibin Joseph Raj",
@@ -12,7 +12,7 @@
 		{
 			"matches": ["https://*.saas.microfocus.com/*", "https://*.opentext.com/*"],
 			"css": ["valueedge-beautifier-styles.css"],
-			"js": ["valueedge-beautifier-script.js", "valueedge-ticket-jumper.js"],
+			"js": ["valueedge-beautifier-script.js", "valueedge-ticket-jumper.js", "valueedge-comment-saver.js"],
 			"all_frames": true,
 			"world": "ISOLATED",
 			"run_at": "document_end"

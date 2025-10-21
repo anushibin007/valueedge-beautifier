@@ -105,6 +105,14 @@
 						within ValueEdge itself. No more jumping between tools. Jump to your tickets
 						directly.
 					</p>
+					<p class="fs-4">6. Save comments as drafts</p>
+					<p>
+						Now you can save your comments as drafts while working on them. Just hit the
+						"Save Draft" button below the comment box, and your comment will be saved in
+						local storage. You can restore it later by clicking the "Restore Draft"
+						button. Each ticket has its own draft storage, so you can work on multiple
+						tickets without losing your drafts.
+					</p>
 				</div>
 			</div>
 			<div class="row">
