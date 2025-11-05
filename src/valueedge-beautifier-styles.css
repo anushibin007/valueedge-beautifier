@@ -54,15 +54,15 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	--bs-jas-badge-padding-x: 0.65em;
 	--bs-jas-badge-padding-y: 0.35em;
 	--bs-jas-badge-font-size: 0.75em;
-	--bs-jas-badge-font-weight: 700;
+	/* --bs-jas-badge-font-weight: 700; */
 	--bs-jas-badge-color: #fff;
 	--bs-jas-badge-border-radius: var(--bs-jas-border-radius);
 	display: inline-block;
 	font-size: var(--bs-jas-badge-font-size);
-	font-weight: var(--bs-jas-badge-font-weight);
+	/* font-weight: var(--bs-jas-badge-font-weight); */
 	line-height: 1;
 	color: var(--bs-jas-badge-color);
-	text-align: center;
+	/* text-align: center; */
 	vertical-align: baseline;
 	padding: var(--bs-jas-badge-padding-y) var(--bs-jas-badge-padding-x);
 	white-space: nowrap;
