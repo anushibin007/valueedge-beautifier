@@ -340,19 +340,30 @@ if (!window.__valueEdgeBeautifierInitialized) {
 		window.__valueEdgeBeautifierBeautificationAttempts = 0;
 	}
 
+	// Debounce timer for mutation observer
+	let debounceTimer = null;
+
 	window.addEventListener("load", function () {
 		const observer = new MutationObserver((mutationsList, observer) => {
-			// Attempt to look for changes in the DOM only 10 times
-			if (window.__valueEdgeBeautifierBeautificationAttempts <= 10) {
-				beautifyPhaseInUserStoryView();
-				beautifyPhaseInBacklogView();
-				beautifyPhaseInTeamBacklogView();
-
-				// Make the labels in the ticket view more appealing and easier to find
-				beautifyLabels();
-				addSidbarToggleButton();
-				window.__valueEdgeBeautifierBeautificationAttempts++;
+			// Clear the previous timer if it exists
+			if (debounceTimer) {
+				clearTimeout(debounceTimer);
 			}
+
+			// Set a new timer to execute the beautification after 1 second
+			debounceTimer = setTimeout(() => {
+				// Attempt to look for changes in the DOM only 10 times
+				if (window.__valueEdgeBeautifierBeautificationAttempts <= 10) {
+					beautifyPhaseInUserStoryView();
+					beautifyPhaseInBacklogView();
+					beautifyPhaseInTeamBacklogView();
+
+					// Make the labels in the ticket view more appealing and easier to find
+					beautifyLabels();
+					addSidbarToggleButton();
+					window.__valueEdgeBeautifierBeautificationAttempts++;
+				}
+			}, 1000); // 1 second debounce
 		});
 
 		// Start observing the document for changes
@@ -360,6 +371,9 @@ if (!window.__valueEdgeBeautifierInitialized) {
 
 		// Disconnect the observer when the page unloads
 		window.addEventListener("unload", function () {
+			if (debounceTimer) {
+				clearTimeout(debounceTimer);
+			}
 			observer.disconnect();
 		});
 	});
