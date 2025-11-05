@@ -51,9 +51,18 @@ const applyBeautification = (elements) => {
 		if (element.innerHTML) {
 			const badgeClass = getBadgeClassForPhase(element.innerHTML);
 			if (badgeClass) {
-				element.classList.add("phase-beautifier");
-				element.classList.add("badge");
-				element.classList.add(getBadgeClassForPhase(element.innerHTML));
+				// Check if the element is already beautified to avoid re-applying animation
+				if (!element.classList.contains("phase-beautifier")) {
+					element.classList.add("phase-beautifier");
+					element.classList.add("badge");
+					element.classList.add("fade-in-color"); // Start with transparent
+					element.classList.add(badgeClass);
+					
+					// Trigger the color animation after a brief delay
+					setTimeout(() => {
+						element.classList.remove("fade-in-color");
+					}, 10); // Small delay to ensure CSS is applied
+				}
 			}
 		}
 	});
