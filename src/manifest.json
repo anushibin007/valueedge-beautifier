@@ -10,7 +10,7 @@
 	},
 	"content_scripts": [
 		{
-			"matches": ["https://*.saas.microfocus.com/*", "https://*.opentext.com/*"],
+			"matches": ["https://*.saas.microfocus.com/*", "https://*.opentext.com/*","https://*.almoctane.com/*"],
 			"css": ["valueedge-beautifier-styles.css"],
 			"js": ["valueedge-beautifier-script.js", "valueedge-ticket-jumper.js", "valueedge-comment-saver.js"],
 			"all_frames": true,
