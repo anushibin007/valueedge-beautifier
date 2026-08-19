@@ -234,6 +234,11 @@
 		}
 
 		refreshBtn.addEventListener("click", runProofread);
+
+		// Auto-trigger if the comment box already had content
+		if (!isPaneEmpty(originalPane)) {
+			runProofread();
+		}
 	}
 
 	// ---- Backend healthcheck ----
