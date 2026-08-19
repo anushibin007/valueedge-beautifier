@@ -6,7 +6,7 @@
 	// ---- Proofread API configuration ----
 	const PROOFREAD_API_BASE_URL = "https://jas-hcjt-server.otxlab.net/ve-inator-backend/api/v1";
 	const PROOFREAD_API_ENDPOINT = `${PROOFREAD_API_BASE_URL}/improve`;
-	const PROOFREAD_HEALTHCHECK_ENDPOINT = `${PROOFREAD_API_BASE_URL}/config`;
+	const PROOFREAD_HEALTHCHECK_ENDPOINT = `${PROOFREAD_API_BASE_URL}/config/`;
 	const PROOFREAD_IMPROVEMENT_TEMPLATE = "proofread_v1";
 
 	// Define unique localStorage key name
