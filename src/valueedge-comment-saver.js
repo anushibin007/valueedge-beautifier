@@ -115,7 +115,10 @@
 		overlay.innerHTML = `
 			<div class="ve-proofread-modal" role="dialog" aria-modal="true" aria-labelledby="ve-proofread-title">
 				<div class="ve-proofread-modal-header">
-					<span id="ve-proofread-title" class="ve-proofread-title">✨ Proofread Comment</span>
+					<div>
+						<span id="ve-proofread-title" class="ve-proofread-title">✨ Proofread Comment</span>
+						<div class="ve-proofread-subtitle">provided by ValueEdge Beautifier</div>
+					</div>
 					<button class="ve-proofread-close-x" id="ve-proofread-close-x" title="Close">&times;</button>
 				</div>
 				<div class="ve-proofread-modal-body">

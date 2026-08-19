@@ -123,6 +123,13 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	color: #111;
 }
 
+.ve-proofread-subtitle {
+	font-size: 0.72em;
+	color: #aaa;
+	margin-top: 1px;
+	font-weight: 400;
+}
+
 .ve-proofread-close-x {
 	background: none;
 	border: none;
