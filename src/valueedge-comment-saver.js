@@ -149,9 +149,23 @@
 		// Populate original content from the comment box (may be empty)
 		originalPane.innerHTML = getCommentValue();
 
-		// Enable "Improve again" only when Original pane has non-whitespace content
+		// Helper: returns true if the pane is blank or contains only whitespace/<br> nodes
+		function isPaneEmpty(pane) {
+			const text = pane.textContent.trim();
+			if (text.length > 0) return false;
+			// textContent is empty but there may still be <br> or empty <p> nodes
+			return true;
+		}
+
+		// If the comment box was empty (just <br>/<p><br></p>), clear the pane so
+		// the placeholder shows and the element is considered :empty by CSS
+		if (isPaneEmpty(originalPane)) {
+			originalPane.innerHTML = "";
+		}
+
+		// Enable "Improve again" only when Original pane has real content
 		function syncRefreshBtn() {
-			refreshBtn.disabled = originalPane.textContent.trim().length === 0;
+			refreshBtn.disabled = isPaneEmpty(originalPane);
 		}
 		syncRefreshBtn(); // set initial state
 		originalPane.addEventListener("input", syncRefreshBtn);
@@ -178,7 +192,7 @@
 		// ---- Proofread API call (reusable) ----
 		function runProofread() {
 			// Guard: do not call the backend if there is nothing to improve
-			if (originalPane.textContent.trim().length === 0) return;
+			if (isPaneEmpty(originalPane)) return;
 
 			refreshBtn.disabled = true;
 			refreshBtn.textContent = "⏳ Improving…";
