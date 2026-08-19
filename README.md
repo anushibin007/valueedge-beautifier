@@ -113,6 +113,16 @@
 						button. Each ticket has its own draft storage, so you can work on multiple
 						tickets without losing your drafts.
 					</p>
+					<p class="fs-4">7. ✨ AI Proofread Comments</p>
+					<p>
+						Click the "✨ Proofread" button below the comment box to improve your comment
+						with AI. A side-by-side modal shows your original comment on the left and the
+						AI-improved version on the right. Both panes are editable — tweak either
+						version, hit "🔄 Improve again" to re-run improvement on your edits, then
+						click "Use improved" to push the text back into the comment box. The button
+						only appears when the backend is reachable, so it never shows up if the
+						service is offline.
+					</p>
 				</div>
 			</div>
 			<div class="row">
