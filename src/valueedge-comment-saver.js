@@ -120,17 +120,13 @@
 					<button class="ve-proofread-close-x" id="ve-proofread-close-x" title="Close">&times;</button>
 				</div>
 				<div class="ve-proofread-modal-body">
-					<div class="ve-proofread-pane">
-						<div class="ve-proofread-pane-header">
-							<span class="ve-proofread-pane-label">Original</span>
-							<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-improve using current Original text">🔄 Improve again</button>
-						</div>
-						<div id="ve-proofread-original-content" class="ve-proofread-content" contenteditable="true" spellcheck="true"></div>
+					<div class="ve-proofread-panes-header">
+						<span class="ve-proofread-pane-label">Original</span>
+						<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-improve using current Original text">🔄 Improve again</button>
+						<span class="ve-proofread-pane-label ve-proofread-pane-label-improved">Improved</span>
 					</div>
-					<div class="ve-proofread-pane">
-						<div class="ve-proofread-pane-header">
-							<span class="ve-proofread-pane-label">Improved</span>
-						</div>
+					<div class="ve-proofread-panes-row">
+						<div id="ve-proofread-original-content" class="ve-proofread-content" contenteditable="true" spellcheck="true"></div>
 						<div id="ve-proofread-improved-content" class="ve-proofread-content ve-proofread-improved-pane" contenteditable="true" spellcheck="true">
 							<div class="ve-proofread-loading" id="ve-proofread-loading">
 								<span class="ve-proofread-spinner"></span> Proofreading…
