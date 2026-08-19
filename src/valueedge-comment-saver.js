@@ -3,6 +3,11 @@
 (function () {
 	"use strict";
 
+	// ---- Proofread API configuration ----
+	const PROOFREAD_API_BASE_URL = "https://tbd_actual_server_url";
+	const PROOFREAD_API_ENDPOINT = `${PROOFREAD_API_BASE_URL}/improve`;
+	const PROOFREAD_IMPROVEMENT_TEMPLATE = "proofread_v1";
+
 	// Define unique localStorage key name
 
 	let DRAFT_KEY = `valueedge_comment_draft`;
@@ -94,7 +99,143 @@
 	let buttonsAdded = false;
 	let saveButton = null;
 	let restoreButton = null;
+	let proofreadButton = null;
 	let lastSavedDisplay = null;
+
+	// ---- Proofread Modal Logic ----
+
+	function createProofreadModal() {
+		const existingModal = document.getElementById("ve-proofread-modal-overlay");
+		if (existingModal) existingModal.remove();
+
+		const overlay = document.createElement("div");
+		overlay.id = "ve-proofread-modal-overlay";
+		overlay.className = "ve-proofread-overlay";
+
+		overlay.innerHTML = `
+			<div class="ve-proofread-modal" role="dialog" aria-modal="true" aria-labelledby="ve-proofread-title">
+				<div class="ve-proofread-modal-header">
+					<span id="ve-proofread-title" class="ve-proofread-title">✨ Proofread Comment</span>
+					<button class="ve-proofread-close-x" id="ve-proofread-close-x" title="Close">&times;</button>
+				</div>
+				<div class="ve-proofread-modal-body">
+					<div class="ve-proofread-pane">
+						<div class="ve-proofread-pane-header">
+							<span class="ve-proofread-pane-label">Original</span>
+							<div class="ve-proofread-pane-actions">
+								<button class="ve-proofread-action-btn" id="ve-proofread-copy-original" title="Copy to clipboard">📋 Copy</button>
+								<button class="ve-proofread-action-btn ve-proofread-use-btn" id="ve-proofread-use-original" title="Use this comment">✅ Use this</button>
+							</div>
+						</div>
+						<div id="ve-proofread-original-content" class="ve-proofread-content" contenteditable="true" spellcheck="true"></div>
+					</div>
+					<div class="ve-proofread-divider"></div>
+					<div class="ve-proofread-pane">
+						<div class="ve-proofread-pane-header">
+							<span class="ve-proofread-pane-label">Improved</span>
+							<div class="ve-proofread-pane-actions">
+								<button class="ve-proofread-action-btn" id="ve-proofread-copy-improved" title="Copy to clipboard">📋 Copy</button>
+								<button class="ve-proofread-action-btn ve-proofread-use-btn" id="ve-proofread-use-improved" title="Use this comment">✅ Use this</button>
+							</div>
+						</div>
+						<div id="ve-proofread-improved-content" class="ve-proofread-content ve-proofread-improved-pane" contenteditable="true" spellcheck="true">
+							<div class="ve-proofread-loading" id="ve-proofread-loading">
+								<span class="ve-proofread-spinner"></span> Proofreading…
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="ve-proofread-modal-footer">
+					<button class="ve-proofread-footer-btn ve-proofread-cancel-btn" id="ve-proofread-cancel">Cancel</button>
+					<button class="ve-proofread-footer-btn ve-proofread-close-btn" id="ve-proofread-close">Close</button>
+				</div>
+			</div>
+		`;
+
+		document.body.appendChild(overlay);
+
+		const originalPane = overlay.querySelector("#ve-proofread-original-content");
+		const improvedPane = overlay.querySelector("#ve-proofread-improved-content");
+		const loadingEl = overlay.querySelector("#ve-proofread-loading");
+
+		// Populate original content
+		const commentHTML = getCommentValue();
+		originalPane.innerHTML = commentHTML;
+
+		// Close helpers
+		function closeModal() {
+			overlay.remove();
+		}
+
+		overlay.querySelector("#ve-proofread-close-x").addEventListener("click", closeModal);
+		overlay.querySelector("#ve-proofread-cancel").addEventListener("click", closeModal);
+		overlay.querySelector("#ve-proofread-close").addEventListener("click", closeModal);
+
+		// Close on backdrop click
+		overlay.addEventListener("click", (e) => {
+			if (e.target === overlay) closeModal();
+		});
+
+		// Copy to clipboard helper
+		function copyPaneContent(pane, btn) {
+			const text = pane.innerText || pane.textContent;
+			navigator.clipboard.writeText(text).then(() => {
+				const original = btn.textContent;
+				btn.textContent = "✅ Copied!";
+				setTimeout(() => (btn.textContent = original), 1500);
+			}).catch(() => {
+				alert("Clipboard access denied. Please allow clipboard permissions.");
+			});
+		}
+
+		overlay.querySelector("#ve-proofread-copy-original").addEventListener("click", function () {
+			copyPaneContent(originalPane, this);
+		});
+
+		overlay.querySelector("#ve-proofread-copy-improved").addEventListener("click", function () {
+			copyPaneContent(improvedPane, this);
+		});
+
+		// Use this comment helpers
+		function useComment(pane) {
+			const html = pane.innerHTML;
+			setCommentValue(html);
+			closeModal();
+		}
+
+		overlay.querySelector("#ve-proofread-use-original").addEventListener("click", () => {
+			useComment(originalPane);
+		});
+
+		overlay.querySelector("#ve-proofread-use-improved").addEventListener("click", () => {
+			useComment(improvedPane);
+		});
+
+		// Call the proofread API
+		const plainText = originalPane.innerText || originalPane.textContent;
+
+		fetch(PROOFREAD_API_ENDPOINT, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				input_comment_text: plainText,
+				improvement_template: PROOFREAD_IMPROVEMENT_TEMPLATE,
+			}),
+		})
+			.then((res) => {
+				if (!res.ok) throw new Error(`HTTP ${res.status}`);
+				return res.json();
+			})
+			.then((data) => {
+				loadingEl.remove();
+				improvedPane.innerHTML = data.improved_comment_data || "";
+			})
+			.catch((err) => {
+				loadingEl.remove();
+				improvedPane.innerHTML = `<span class="ve-proofread-error">⚠️ Failed to proofread: ${err.message}</span>`;
+				console.error("Proofread API error:", err);
+			});
+	}
 
 	// Create and insert buttons
 	function createAndInsertButtons() {
@@ -124,6 +265,14 @@
 		restoreButton.disabled = !hasSavedDraft();
 		restoreButton.addEventListener("click", restoreDraft);
 
+		// Create "Proofread" button
+		proofreadButton = document.createElement("button");
+		proofreadButton.className =
+			"button--flat button--default button--slim section margin-t--4px margin-r--4px ve-proofread-btn";
+		proofreadButton.type = "button";
+		proofreadButton.textContent = "✨ Proofread";
+		proofreadButton.addEventListener("click", createProofreadModal);
+
 		// Create "Draft last saved" display element
 		lastSavedDisplay = document.createElement("span");
 		lastSavedDisplay.id = "draft-last-saved-display";
@@ -135,6 +284,7 @@
 		// Insert buttons before the existing "Add" button
 		buttonContainer.insertBefore(saveButton, buttonContainer.firstChild);
 		buttonContainer.insertBefore(restoreButton, buttonContainer.firstChild);
+		buttonContainer.insertBefore(proofreadButton, buttonContainer.firstChild);
 		// This is not coming as good as I expected, so commenting it out for now
 		// buttonContainer.insertBefore(lastSavedDisplay, buttonContainer.firstChild);
 
@@ -147,9 +297,11 @@
 	function removeButtons() {
 		if (saveButton) saveButton.remove();
 		if (restoreButton) restoreButton.remove();
+		if (proofreadButton) proofreadButton.remove();
 		if (lastSavedDisplay) lastSavedDisplay.remove();
 		saveButton = null;
 		restoreButton = null;
+		proofreadButton = null;
 		lastSavedDisplay = null;
 		buttonsAdded = false;
 	}
