@@ -121,9 +121,13 @@
 				</div>
 				<div class="ve-proofread-modal-body">
 					<div class="ve-proofread-panes-header">
-						<span class="ve-proofread-pane-label">Original</span>
-						<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-improve using current Original text">🔄 Improve again</button>
-						<span class="ve-proofread-pane-label ve-proofread-pane-label-improved">Improved</span>
+						<div class="ve-proofread-pane-header-cell">
+							<span class="ve-proofread-pane-label">Original</span>
+							<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-improve using current Original text">🔄 Improve again</button>
+						</div>
+						<div class="ve-proofread-pane-header-cell">
+							<span class="ve-proofread-pane-label">Improved</span>
+						</div>
 					</div>
 					<div class="ve-proofread-panes-row">
 						<div id="ve-proofread-original-content" class="ve-proofread-content" contenteditable="true" spellcheck="true"></div>
@@ -244,6 +248,17 @@
 		if (!proofreadButton) return;
 		const reachable = await isBackendReachable();
 		proofreadButton.style.display = reachable ? "" : "none";
+		if (reachable) {
+			// Re-apply content-based enabled/disabled after showing the button
+			updateProofreadButtonState();
+		}
+	}
+
+	// Check comment box content and enable/disable the Proofread button accordingly
+	function updateProofreadButtonState() {
+		if (!proofreadButton) return;
+		const text = getCommentBox()?.innerText ?? "";
+		proofreadButton.disabled = text.trim().length === 0;
 	}
 
 	// Create and insert buttons
@@ -302,6 +317,13 @@
 		updateLastSavedDisplay();
 		buttonsAdded = true;
 
+		// Set initial disabled state and watch comment box for content changes
+		updateProofreadButtonState();
+		const commentBox = getCommentBox();
+		if (commentBox) {
+			commentBox.addEventListener("input", updateProofreadButtonState);
+		}
+
 		// Async healthcheck — fires in the background; does not block anything
 		refreshProofreadButtonVisibility();
 	}
@@ -312,6 +334,11 @@
 		if (restoreButton) restoreButton.remove();
 		if (proofreadButton) proofreadButton.remove();
 		if (lastSavedDisplay) lastSavedDisplay.remove();
+		// Remove the content-change listener from the comment box
+		const commentBox = getCommentBox();
+		if (commentBox) {
+			commentBox.removeEventListener("input", updateProofreadButtonState);
+		}
 		saveButton = null;
 		restoreButton = null;
 		proofreadButton = null;
