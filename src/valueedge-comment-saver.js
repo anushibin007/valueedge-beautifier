@@ -145,7 +145,7 @@
 							</div>
 						</div>
 						<div class="ve-proofread-pane-footer">
-							<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-run proofread with current Original text">🔄 Proofread again</button>
+							<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-run proofread with current Original text">✨ Proofread again</button>
 						</div>
 					</div>
 				</div>
@@ -219,7 +219,7 @@
 			const refreshBtn = overlay.querySelector("#ve-proofread-refresh");
 			if (refreshBtn) {
 				refreshBtn.disabled = true;
-				refreshBtn.textContent = "⏳";
+				refreshBtn.textContent = "⏳ Proofreading…";
 			}
 
 			// Clear improved pane and show spinner
@@ -252,7 +252,7 @@
 				.finally(() => {
 					if (refreshBtn) {
 						refreshBtn.disabled = false;
-						refreshBtn.textContent = "🔄";
+						refreshBtn.textContent = "✨ Proofread again";
 					}
 				});
 		}
