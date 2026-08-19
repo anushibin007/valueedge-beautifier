@@ -228,13 +228,13 @@
 					<span class="ve-proofread-spinner"></span> Proofreading…
 				</div>`;
 
-			const plainText = originalPane.innerText || originalPane.textContent;
+			const commentHTML = originalPane.innerHTML;
 
 			fetch(PROOFREAD_API_ENDPOINT, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					input_comment_text: plainText,
+					input_comment_text: commentHTML,
 					improvement_template: PROOFREAD_IMPROVEMENT_TEMPLATE,
 				}),
 			})
