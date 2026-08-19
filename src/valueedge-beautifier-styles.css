@@ -236,15 +236,40 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 .ve-proofread-content {
 	flex: 1;
 	overflow-y: auto;
-	padding: 14px 16px;
+	padding: 16px 20px;
 	font-size: 0.95em;
 	line-height: 1.6;
 	outline: none;
 	min-height: 120px;
 	word-break: break-word;
+	box-sizing: border-box;
 }
 .ve-proofread-content:focus {
 	background: #fafeff;
+}
+
+/* Restore rich-text element spacing that the host page may reset */
+.ve-proofread-content p {
+	margin: 0 0 0.6em 0;
+}
+.ve-proofread-content p:last-child {
+	margin-bottom: 0;
+}
+.ve-proofread-content ul,
+.ve-proofread-content ol {
+	margin: 0 0 0.6em 0;
+	padding-left: 1.6em;
+}
+.ve-proofread-content li {
+	margin-bottom: 0.2em;
+}
+.ve-proofread-content strong,
+.ve-proofread-content b {
+	font-weight: 600;
+}
+.ve-proofread-content em,
+.ve-proofread-content i {
+	font-style: italic;
 }
 
 /* Improved pane loading state */
