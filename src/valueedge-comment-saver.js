@@ -123,35 +123,24 @@
 					<div class="ve-proofread-pane">
 						<div class="ve-proofread-pane-header">
 							<span class="ve-proofread-pane-label">Original</span>
-							<div class="ve-proofread-pane-actions">
-								<button class="ve-proofread-action-btn" id="ve-proofread-copy-original" title="Copy to clipboard">📋 Copy</button>
-								<button class="ve-proofread-action-btn ve-proofread-use-btn" id="ve-proofread-use-original" title="Use this comment">✅ Use this</button>
-							</div>
+							<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-improve using current Original text">🔄 Improve again</button>
 						</div>
 						<div id="ve-proofread-original-content" class="ve-proofread-content" contenteditable="true" spellcheck="true"></div>
 					</div>
-					<div class="ve-proofread-divider"></div>
 					<div class="ve-proofread-pane">
 						<div class="ve-proofread-pane-header">
 							<span class="ve-proofread-pane-label">Improved</span>
-							<div class="ve-proofread-pane-actions">
-								<button class="ve-proofread-action-btn" id="ve-proofread-copy-improved" title="Copy to clipboard">📋 Copy</button>
-								<button class="ve-proofread-action-btn ve-proofread-use-btn" id="ve-proofread-use-improved" title="Use this comment">✅ Use this</button>
-							</div>
 						</div>
 						<div id="ve-proofread-improved-content" class="ve-proofread-content ve-proofread-improved-pane" contenteditable="true" spellcheck="true">
 							<div class="ve-proofread-loading" id="ve-proofread-loading">
 								<span class="ve-proofread-spinner"></span> Proofreading…
 							</div>
 						</div>
-						<div class="ve-proofread-pane-footer">
-							<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-run proofread with current Original text">✨ Proofread again</button>
-						</div>
 					</div>
 				</div>
 				<div class="ve-proofread-modal-footer">
 					<button class="ve-proofread-footer-btn ve-proofread-cancel-btn" id="ve-proofread-cancel">Cancel</button>
-					<button class="ve-proofread-footer-btn ve-proofread-close-btn" id="ve-proofread-close">Close</button>
+					<button class="ve-proofread-footer-btn ve-proofread-use-improved-btn" id="ve-proofread-use-improved">Use improved</button>
 				</div>
 			</div>
 		`;
@@ -172,46 +161,16 @@
 
 		overlay.querySelector("#ve-proofread-close-x").addEventListener("click", closeModal);
 		overlay.querySelector("#ve-proofread-cancel").addEventListener("click", closeModal);
-		overlay.querySelector("#ve-proofread-close").addEventListener("click", closeModal);
 
 		// Close on backdrop click
 		overlay.addEventListener("click", (e) => {
 			if (e.target === overlay) closeModal();
 		});
 
-		// Copy to clipboard helper
-		function copyPaneContent(pane, btn) {
-			const text = pane.innerText || pane.textContent;
-			navigator.clipboard.writeText(text).then(() => {
-				const original = btn.textContent;
-				btn.textContent = "✅ Copied!";
-				setTimeout(() => (btn.textContent = original), 1500);
-			}).catch(() => {
-				alert("Clipboard access denied. Please allow clipboard permissions.");
-			});
-		}
-
-		overlay.querySelector("#ve-proofread-copy-original").addEventListener("click", function () {
-			copyPaneContent(originalPane, this);
-		});
-
-		overlay.querySelector("#ve-proofread-copy-improved").addEventListener("click", function () {
-			copyPaneContent(improvedPane, this);
-		});
-
-		// Use this comment helpers
-		function useComment(pane) {
-			const html = pane.innerHTML;
-			setCommentValue(html);
-			closeModal();
-		}
-
-		overlay.querySelector("#ve-proofread-use-original").addEventListener("click", () => {
-			useComment(originalPane);
-		});
-
+		// "Use improved" — write improved pane HTML back to comment box
 		overlay.querySelector("#ve-proofread-use-improved").addEventListener("click", () => {
-			useComment(improvedPane);
+			setCommentValue(improvedPane.innerHTML);
+			closeModal();
 		});
 
 		// ---- Proofread API call (reusable) ----
@@ -219,7 +178,7 @@
 			const refreshBtn = overlay.querySelector("#ve-proofread-refresh");
 			if (refreshBtn) {
 				refreshBtn.disabled = true;
-				refreshBtn.textContent = "⏳ Proofreading…";
+				refreshBtn.textContent = "⏳ Improving…";
 			}
 
 			// Clear improved pane and show spinner
@@ -252,7 +211,7 @@
 				.finally(() => {
 					if (refreshBtn) {
 						refreshBtn.disabled = false;
-						refreshBtn.textContent = "✨ Proofread again";
+						refreshBtn.textContent = "🔄 Improve again";
 					}
 				});
 		}

@@ -85,7 +85,7 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	position: fixed;
 	inset: 0;
 	z-index: 999999;
-	background: rgba(0, 0, 0, 0.55);
+	background: rgba(0, 0, 0, 0.45);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -95,10 +95,10 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 
 .ve-proofread-modal {
 	background: #fff;
-	border-radius: 10px;
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+	border-radius: 12px;
+	box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
 	width: 96vw;
-	max-width: 1100px;
+	max-width: 1000px;
 	max-height: 90vh;
 	display: flex;
 	flex-direction: column;
@@ -111,29 +111,31 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 14px 20px;
-	border-bottom: 1px solid #e0e0e0;
-	background: #f8f9fb;
-	border-radius: 10px 10px 0 0;
+	padding: 18px 24px 14px;
+	border-bottom: 1px solid #e8e8e8;
+	background: #fff;
+	border-radius: 12px 12px 0 0;
 }
 
 .ve-proofread-title {
-	font-size: 1.05em;
-	font-weight: 600;
-	color: #1a1a2e;
+	font-size: 1.1em;
+	font-weight: 700;
+	color: #111;
 }
 
 .ve-proofread-close-x {
 	background: none;
 	border: none;
-	font-size: 1.5em;
+	font-size: 1.4em;
 	line-height: 1;
 	cursor: pointer;
-	color: #666;
-	padding: 0 4px;
+	color: #888;
+	padding: 2px 6px;
+	border-radius: 4px;
 }
 .ve-proofread-close-x:hover {
-	color: #000;
+	background: #f0f0f0;
+	color: #333;
 }
 
 /* Body: two-pane layout */
@@ -143,6 +145,9 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	flex: 1;
 	overflow: hidden;
 	min-height: 0;
+	padding: 20px 24px;
+	gap: 16px;
+	background: #fff;
 }
 
 .ve-proofread-pane {
@@ -150,102 +155,67 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
-	overflow: hidden;
+	gap: 10px;
 }
 
-.ve-proofread-divider {
-	width: 1px;
-	background: #e0e0e0;
-	flex-shrink: 0;
-}
-
-/* "Proofread again" button — bottom-right of the improved pane */
-.ve-proofread-pane-footer {
-	display: flex;
-	justify-content: flex-end;
-	padding: 6px 12px 8px;
-	flex-shrink: 0;
-	border-top: 1px solid #f0f0f0;
-}
-
-.ve-proofread-refresh-btn {
-	font-size: 0.82em;
-	padding: 4px 12px;
-	border-radius: 5px;
-	border: 1px solid #d0d0d0;
-	background: #fff;
-	cursor: pointer;
-	color: #333;
-	transition: background 0.15s;
-}
-.ve-proofread-refresh-btn:hover {
-	background: #f0f0f0;
-}
-.ve-proofread-refresh-btn:disabled {
-	cursor: not-allowed;
-	opacity: 0.6;
-}
-
-/* Pane header */
+/* Pane header — label + optional button */
 .ve-proofread-pane-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 10px 16px 6px;
-	border-bottom: 1px solid #f0f0f0;
-	background: #fcfcfc;
 	flex-shrink: 0;
 }
 
 .ve-proofread-pane-label {
-	font-weight: 600;
-	font-size: 0.92em;
-	color: #444;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
+	font-weight: 700;
+	font-size: 0.95em;
+	color: #111;
 }
 
-.ve-proofread-pane-actions {
-	display: flex;
-	gap: 6px;
-}
-
-.ve-proofread-action-btn {
+/* "Improve again" button in Original pane header */
+.ve-proofread-refresh-btn {
 	font-size: 0.82em;
-	padding: 4px 10px;
-	border-radius: 5px;
-	border: 1px solid #d0d0d0;
+	padding: 5px 12px;
+	border-radius: 6px;
+	border: 1px solid #2563eb;
 	background: #fff;
 	cursor: pointer;
-	color: #333;
+	color: #2563eb;
 	transition: background 0.15s;
 }
-.ve-proofread-action-btn:hover {
-	background: #f0f0f0;
+.ve-proofread-refresh-btn:hover {
+	background: #eff6ff;
 }
-.ve-proofread-use-btn {
-	background: #e8f5e9 !important;
-	border-color: #a5d6a7 !important;
-	color: #2e7d32 !important;
-}
-.ve-proofread-use-btn:hover {
-	background: #c8e6c9 !important;
+.ve-proofread-refresh-btn:disabled {
+	cursor: not-allowed;
+	opacity: 0.55;
 }
 
-/* Pane content (editable area) */
+/* Pane content (editable area) — textarea look */
 .ve-proofread-content {
 	flex: 1;
 	overflow-y: auto;
-	padding: 16px 20px;
+	padding: 14px 16px;
 	font-size: 0.95em;
 	line-height: 1.6;
 	outline: none;
-	min-height: 120px;
+	min-height: 200px;
 	word-break: break-word;
 	box-sizing: border-box;
+	border: 1.5px solid #d1d5db;
+	border-radius: 8px;
+	background: #fff;
+	transition: border-color 0.15s;
+	resize: vertical;
 }
 .ve-proofread-content:focus {
-	background: #fafeff;
+	border-color: #2563eb;
+	box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+/* Improved pane — subtle tinted background */
+.ve-proofread-improved-pane {
+	background: #f5f7fb;
 }
 
 /* Restore rich-text element spacing that the host page may reset */
@@ -272,11 +242,7 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	font-style: italic;
 }
 
-/* Improved pane loading state */
-.ve-proofread-improved-pane {
-	background: #f8fbff;
-}
-
+/* Loading state */
 .ve-proofread-loading {
 	display: flex;
 	align-items: center;
@@ -290,7 +256,7 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	width: 18px;
 	height: 18px;
 	border: 3px solid #c0d8f0;
-	border-top-color: #0d6efd;
+	border-top-color: #2563eb;
 	border-radius: 50%;
 	display: inline-block;
 	animation: ve-spin 0.8s linear infinite;
@@ -308,38 +274,47 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 .ve-proofread-modal-footer {
 	display: flex;
 	justify-content: flex-end;
+	align-items: center;
 	gap: 10px;
-	padding: 12px 20px;
-	border-top: 1px solid #e0e0e0;
-	background: #f8f9fb;
-	border-radius: 0 0 10px 10px;
+	padding: 14px 24px;
+	border-top: 1px solid #e8e8e8;
+	background: #fff;
+	border-radius: 0 0 12px 12px;
 	flex-shrink: 0;
 }
 
 .ve-proofread-footer-btn {
-	padding: 7px 22px;
-	border-radius: 6px;
+	padding: 8px 24px;
+	border-radius: 8px;
 	border: 1px solid #ccc;
 	cursor: pointer;
 	font-size: 0.92em;
+	font-weight: 500;
 	background: #fff;
 	color: #333;
-	transition: background 0.15s;
+	transition: background 0.15s, border-color 0.15s;
 }
 .ve-proofread-footer-btn:hover {
-	background: #f0f0f0;
+	background: #f5f5f5;
 }
+
+/* Cancel — neutral grey */
 .ve-proofread-cancel-btn {
-	border-color: #e57373 !important;
-	color: #c62828 !important;
+	border-color: #ccc !important;
+	color: #333 !important;
 }
 .ve-proofread-cancel-btn:hover {
-	background: #ffebee !important;
+	background: #f0f0f0 !important;
 }
-.ve-proofread-close-btn {
-	border-color: #90a4ae !important;
-	color: #37474f !important;
+
+/* Use improved — primary blue fill */
+.ve-proofread-use-improved-btn {
+	background: #2563eb !important;
+	border-color: #2563eb !important;
+	color: #fff !important;
+	font-weight: 600 !important;
 }
-.ve-proofread-close-btn:hover {
-	background: #eceff1 !important;
+.ve-proofread-use-improved-btn:hover {
+	background: #1d4ed8 !important;
+	border-color: #1d4ed8 !important;
 }
