@@ -150,12 +150,20 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	background: #fff;
 }
 
-/* Single header row: "Original" | spacer | "Improve again" | "Improved" — all baseline-aligned */
+/* Single header row with two cells that mirror the content panes */
 .ve-proofread-panes-header {
 	display: flex;
-	align-items: center;
-	gap: 8px;
+	gap: 16px;
 	flex-shrink: 0;
+}
+
+/* Each header cell lines up over its content box */
+.ve-proofread-pane-header-cell {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	min-width: 0;
 }
 
 .ve-proofread-pane-label {
@@ -164,16 +172,7 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	color: #111;
 }
 
-/* "Improve again" button pushed right, leaving room for "Improved" label to align over right pane */
-.ve-proofread-refresh-btn {
-	margin-left: auto;
-}
-
-/* "Improved" label sits at the start of the right half (~50% - gap) */
-.ve-proofread-pane-label-improved {
-	width: calc(50% - 8px);
-	flex-shrink: 0;
-}
+/* "Improve again" button — right side of the Original header cell */
 
 /* Row containing the two content boxes side by side */
 .ve-proofread-panes-row {
@@ -224,6 +223,14 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 .ve-proofread-content:focus {
 	border-color: #2563eb;
 	box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+/* Placeholder text shown when pane is empty */
+.ve-proofread-content[data-placeholder]:empty::before {
+	content: attr(data-placeholder);
+	color: #aaa;
+	font-style: italic;
+	pointer-events: none;
 }
 
 /* Improved pane — subtle tinted background */

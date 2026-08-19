@@ -122,19 +122,15 @@
 					<div class="ve-proofread-panes-header">
 						<div class="ve-proofread-pane-header-cell">
 							<span class="ve-proofread-pane-label">Original</span>
-							<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-improve using current Original text">🔄 Improve again</button>
+							<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-improve using current Original text" disabled>🔄 Improve again</button>
 						</div>
 						<div class="ve-proofread-pane-header-cell">
 							<span class="ve-proofread-pane-label">Improved</span>
 						</div>
 					</div>
 					<div class="ve-proofread-panes-row">
-						<div id="ve-proofread-original-content" class="ve-proofread-content" contenteditable="true" spellcheck="true"></div>
-						<div id="ve-proofread-improved-content" class="ve-proofread-content ve-proofread-improved-pane" contenteditable="true" spellcheck="true">
-							<div class="ve-proofread-loading" id="ve-proofread-loading">
-								<span class="ve-proofread-spinner"></span> Proofreading…
-							</div>
-						</div>
+						<div id="ve-proofread-original-content" class="ve-proofread-content" contenteditable="true" spellcheck="true" data-placeholder="Start writing your comment…"></div>
+						<div id="ve-proofread-improved-content" class="ve-proofread-content ve-proofread-improved-pane" contenteditable="true" spellcheck="true" data-placeholder="Click on the 🔄 Improve again button to see improvements here."></div>
 					</div>
 				</div>
 				<div class="ve-proofread-modal-footer">
@@ -148,10 +144,17 @@
 
 		const originalPane = overlay.querySelector("#ve-proofread-original-content");
 		const improvedPane = overlay.querySelector("#ve-proofread-improved-content");
+		const refreshBtn = overlay.querySelector("#ve-proofread-refresh");
 
-		// Populate original content
-		const commentHTML = getCommentValue();
-		originalPane.innerHTML = commentHTML;
+		// Populate original content from the comment box (may be empty)
+		originalPane.innerHTML = getCommentValue();
+
+		// Enable "Improve again" only when Original pane has non-whitespace content
+		function syncRefreshBtn() {
+			refreshBtn.disabled = originalPane.textContent.trim().length === 0;
+		}
+		syncRefreshBtn(); // set initial state
+		originalPane.addEventListener("input", syncRefreshBtn);
 
 		// Close helpers
 		function closeModal() {
@@ -174,15 +177,15 @@
 
 		// ---- Proofread API call (reusable) ----
 		function runProofread() {
-			const refreshBtn = overlay.querySelector("#ve-proofread-refresh");
-			if (refreshBtn) {
-				refreshBtn.disabled = true;
-				refreshBtn.textContent = "⏳ Improving…";
-			}
+			// Guard: do not call the backend if there is nothing to improve
+			if (originalPane.textContent.trim().length === 0) return;
+
+			refreshBtn.disabled = true;
+			refreshBtn.textContent = "⏳ Improving…";
 
 			// Clear improved pane and show spinner
 			improvedPane.innerHTML = `
-				<div class="ve-proofread-loading" id="ve-proofread-loading">
+				<div class="ve-proofread-loading">
 					<span class="ve-proofread-spinner"></span> Proofreading…
 				</div>`;
 
@@ -208,18 +211,12 @@
 					console.error("Proofread API error:", err);
 				})
 				.finally(() => {
-					if (refreshBtn) {
-						refreshBtn.disabled = false;
-						refreshBtn.textContent = "🔄 Improve again";
-					}
+					refreshBtn.disabled = false;
+					refreshBtn.textContent = "🔄 Improve again";
 				});
 		}
 
-		// Refresh button
-		overlay.querySelector("#ve-proofread-refresh").addEventListener("click", runProofread);
-
-		// Initial call
-		runProofread();
+		refreshBtn.addEventListener("click", runProofread);
 	}
 
 	// ---- Backend healthcheck ----
@@ -247,19 +244,6 @@
 		if (!proofreadButton) return;
 		const reachable = await isBackendReachable();
 		proofreadButton.style.display = reachable ? "" : "none";
-		if (reachable) {
-			// Re-apply content-based enabled/disabled after showing the button
-			updateProofreadButtonState();
-		}
-	}
-
-	// Check comment box content and enable/disable the Proofread button accordingly.
-	// Accepts an optional element to avoid re-querying the DOM (prevents forced reflow).
-	function updateProofreadButtonState(elementOrEvent) {
-		if (!proofreadButton) return;
-		const el = elementOrEvent?.currentTarget ?? elementOrEvent ?? getCommentBox();
-		const text = el ? el.textContent : "";
-		proofreadButton.disabled = text.trim().length === 0;
 	}
 
 	// Create and insert buttons
@@ -318,13 +302,6 @@
 		updateLastSavedDisplay();
 		buttonsAdded = true;
 
-		// Set initial disabled state and watch comment box for content changes
-		updateProofreadButtonState();
-		const commentBox = getCommentBox();
-		if (commentBox) {
-			commentBox.addEventListener("input", updateProofreadButtonState);
-		}
-
 		// Async healthcheck — fires in the background; does not block anything
 		refreshProofreadButtonVisibility();
 	}
@@ -335,11 +312,6 @@
 		if (restoreButton) restoreButton.remove();
 		if (proofreadButton) proofreadButton.remove();
 		if (lastSavedDisplay) lastSavedDisplay.remove();
-		// Remove the content-change listener from the comment box
-		const commentBox = getCommentBox();
-		if (commentBox) {
-			commentBox.removeEventListener("input", updateProofreadButtonState);
-		}
 		saveButton = null;
 		restoreButton = null;
 		proofreadButton = null;
