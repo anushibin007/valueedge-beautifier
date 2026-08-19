@@ -80,16 +80,6 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	color: transparent !important;
 }
 
-/* ===== Proofread button ===== */
-.ve-proofread-btn {
-	background-color: #f0f7ff !important;
-	color: #0d6efd !important;
-	border-color: #b6d4fe !important;
-}
-.ve-proofread-btn:hover {
-	background-color: #dbeafe !important;
-}
-
 /* ===== Proofread modal overlay ===== */
 .ve-proofread-overlay {
 	position: fixed;
@@ -167,38 +157,33 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	width: 1px;
 	background: #e0e0e0;
 	flex-shrink: 0;
+}
+
+/* "Proofread again" button — bottom-right of the improved pane */
+.ve-proofread-pane-footer {
 	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	position: relative;
+	justify-content: flex-end;
+	padding: 6px 12px 8px;
+	flex-shrink: 0;
+	border-top: 1px solid #f0f0f0;
 }
 
 .ve-proofread-refresh-btn {
-	position: absolute;
+	font-size: 0.82em;
+	padding: 4px 12px;
+	border-radius: 5px;
+	border: 1px solid #d0d0d0;
 	background: #fff;
-	border: 1px solid #b0c4de;
-	border-radius: 50%;
-	width: 34px;
-	height: 34px;
-	font-size: 1em;
 	cursor: pointer;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	box-shadow: 0 1px 4px rgba(0,0,0,0.12);
-	transition: background 0.15s, transform 0.15s;
-	padding: 0;
-	z-index: 1;
+	color: #333;
+	transition: background 0.15s;
 }
 .ve-proofread-refresh-btn:hover {
-	background: #eaf3ff;
-	transform: scale(1.1);
+	background: #f0f0f0;
 }
 .ve-proofread-refresh-btn:disabled {
 	cursor: not-allowed;
 	opacity: 0.6;
-	transform: none;
 }
 
 /* Pane header */

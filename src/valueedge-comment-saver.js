@@ -130,9 +130,7 @@
 						</div>
 						<div id="ve-proofread-original-content" class="ve-proofread-content" contenteditable="true" spellcheck="true"></div>
 					</div>
-					<div class="ve-proofread-divider">
-						<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-run proofread with current Original text">🔄</button>
-					</div>
+					<div class="ve-proofread-divider"></div>
 					<div class="ve-proofread-pane">
 						<div class="ve-proofread-pane-header">
 							<span class="ve-proofread-pane-label">Improved</span>
@@ -145,6 +143,9 @@
 							<div class="ve-proofread-loading" id="ve-proofread-loading">
 								<span class="ve-proofread-spinner"></span> Proofreading…
 							</div>
+						</div>
+						<div class="ve-proofread-pane-footer">
+							<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-run proofread with current Original text">🔄 Proofread again</button>
 						</div>
 					</div>
 				</div>
@@ -321,7 +322,7 @@
 		// Create "Proofread" button — hidden until healthcheck confirms backend is up
 		proofreadButton = document.createElement("button");
 		proofreadButton.className =
-			"button--flat button--default button--slim section margin-t--4px margin-r--4px ve-proofread-btn";
+			"button--flat button--default button--slim section margin-t--4px margin-r--4px";
 		proofreadButton.type = "button";
 		proofreadButton.textContent = "✨ Proofread";
 		proofreadButton.style.display = "none"; // hidden until healthcheck passes
