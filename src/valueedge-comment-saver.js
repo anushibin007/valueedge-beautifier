@@ -6,6 +6,7 @@
 	// ---- Proofread API configuration ----
 	const PROOFREAD_API_BASE_URL = "https://jas-hcjt-server.otxlab.net/ve-inator-backend/api/v1";
 	const PROOFREAD_API_ENDPOINT = `${PROOFREAD_API_BASE_URL}/improve`;
+	const PROOFREAD_HEALTHCHECK_ENDPOINT = `${PROOFREAD_API_BASE_URL}/config`;
 	const PROOFREAD_IMPROVEMENT_TEMPLATE = "proofread_v1";
 
 	// Define unique localStorage key name
@@ -237,6 +238,33 @@
 			});
 	}
 
+	// ---- Backend healthcheck ----
+	// Runs asynchronously; never blocks the host page.
+	// Resolves true when /api/v1/config is reachable, false otherwise.
+	async function isBackendReachable() {
+		try {
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 s timeout
+			const res = await fetch(PROOFREAD_HEALTHCHECK_ENDPOINT, {
+				method: "GET",
+				signal: controller.signal,
+			});
+			clearTimeout(timeoutId);
+			return res.ok;
+		} catch {
+			return false;
+		}
+	}
+
+	// Show or hide the Proofread button based on backend availability.
+	// Called once after buttons are inserted, and again whenever the comment
+	// pane re-appears so the check stays fresh.
+	async function refreshProofreadButtonVisibility() {
+		if (!proofreadButton) return;
+		const reachable = await isBackendReachable();
+		proofreadButton.style.display = reachable ? "" : "none";
+	}
+
 	// Create and insert buttons
 	function createAndInsertButtons() {
 		// Find the button container
@@ -265,12 +293,13 @@
 		restoreButton.disabled = !hasSavedDraft();
 		restoreButton.addEventListener("click", restoreDraft);
 
-		// Create "Proofread" button
+		// Create "Proofread" button — hidden until healthcheck confirms backend is up
 		proofreadButton = document.createElement("button");
 		proofreadButton.className =
 			"button--flat button--default button--slim section margin-t--4px margin-r--4px ve-proofread-btn";
 		proofreadButton.type = "button";
 		proofreadButton.textContent = "✨ Proofread";
+		proofreadButton.style.display = "none"; // hidden until healthcheck passes
 		proofreadButton.addEventListener("click", createProofreadModal);
 
 		// Create "Draft last saved" display element
@@ -291,6 +320,9 @@
 		// Update display and button state
 		updateLastSavedDisplay();
 		buttonsAdded = true;
+
+		// Async healthcheck — fires in the background; does not block anything
+		refreshProofreadButtonVisibility();
 	}
 
 	// Remove buttons when comment pane is hidden
@@ -318,7 +350,7 @@
 			)?.parentElement;
 
 			if (buttonContainer && !buttonsAdded) {
-				// Comment pane appeared, add buttons
+				// Comment pane appeared, add buttons (healthcheck fires inside)
 				createAndInsertButtons();
 			} else if (!buttonContainer && buttonsAdded) {
 				// Comment pane disappeared, remove buttons
