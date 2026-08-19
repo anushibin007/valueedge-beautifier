@@ -130,7 +130,9 @@
 						</div>
 						<div id="ve-proofread-original-content" class="ve-proofread-content" contenteditable="true" spellcheck="true"></div>
 					</div>
-					<div class="ve-proofread-divider"></div>
+					<div class="ve-proofread-divider">
+						<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-run proofread with current Original text">🔄</button>
+					</div>
 					<div class="ve-proofread-pane">
 						<div class="ve-proofread-pane-header">
 							<span class="ve-proofread-pane-label">Improved</span>
@@ -157,7 +159,6 @@
 
 		const originalPane = overlay.querySelector("#ve-proofread-original-content");
 		const improvedPane = overlay.querySelector("#ve-proofread-improved-content");
-		const loadingEl = overlay.querySelector("#ve-proofread-loading");
 
 		// Populate original content
 		const commentHTML = getCommentValue();
@@ -212,30 +213,54 @@
 			useComment(improvedPane);
 		});
 
-		// Call the proofread API
-		const plainText = originalPane.innerText || originalPane.textContent;
+		// ---- Proofread API call (reusable) ----
+		function runProofread() {
+			const refreshBtn = overlay.querySelector("#ve-proofread-refresh");
+			if (refreshBtn) {
+				refreshBtn.disabled = true;
+				refreshBtn.textContent = "⏳";
+			}
 
-		fetch(PROOFREAD_API_ENDPOINT, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				input_comment_text: plainText,
-				improvement_template: PROOFREAD_IMPROVEMENT_TEMPLATE,
-			}),
-		})
-			.then((res) => {
-				if (!res.ok) throw new Error(`HTTP ${res.status}`);
-				return res.json();
+			// Clear improved pane and show spinner
+			improvedPane.innerHTML = `
+				<div class="ve-proofread-loading" id="ve-proofread-loading">
+					<span class="ve-proofread-spinner"></span> Proofreading…
+				</div>`;
+
+			const plainText = originalPane.innerText || originalPane.textContent;
+
+			fetch(PROOFREAD_API_ENDPOINT, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					input_comment_text: plainText,
+					improvement_template: PROOFREAD_IMPROVEMENT_TEMPLATE,
+				}),
 			})
-			.then((data) => {
-				loadingEl.remove();
-				improvedPane.innerHTML = data.improved_comment_data || "";
-			})
-			.catch((err) => {
-				loadingEl.remove();
-				improvedPane.innerHTML = `<span class="ve-proofread-error">⚠️ Failed to proofread: ${err.message}</span>`;
-				console.error("Proofread API error:", err);
-			});
+				.then((res) => {
+					if (!res.ok) throw new Error(`HTTP ${res.status}`);
+					return res.json();
+				})
+				.then((data) => {
+					improvedPane.innerHTML = data.improved_comment_data || "";
+				})
+				.catch((err) => {
+					improvedPane.innerHTML = `<span class="ve-proofread-error">⚠️ Failed to proofread: ${err.message}</span>`;
+					console.error("Proofread API error:", err);
+				})
+				.finally(() => {
+					if (refreshBtn) {
+						refreshBtn.disabled = false;
+						refreshBtn.textContent = "🔄";
+					}
+				});
+		}
+
+		// Refresh button
+		overlay.querySelector("#ve-proofread-refresh").addEventListener("click", runProofread);
+
+		// Initial call
+		runProofread();
 	}
 
 	// ---- Backend healthcheck ----
