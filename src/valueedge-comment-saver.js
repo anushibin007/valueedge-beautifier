@@ -39,7 +39,6 @@
 	// Get comment value
 	function getCommentValue() {
 		const commentBox = getCommentBox();
-		console.log("Comment Box:", commentBox);
 		return commentBox ? commentBox.innerHTML : "";
 	}
 
@@ -254,10 +253,12 @@
 		}
 	}
 
-	// Check comment box content and enable/disable the Proofread button accordingly
-	function updateProofreadButtonState() {
+	// Check comment box content and enable/disable the Proofread button accordingly.
+	// Accepts an optional element to avoid re-querying the DOM (prevents forced reflow).
+	function updateProofreadButtonState(elementOrEvent) {
 		if (!proofreadButton) return;
-		const text = getCommentBox()?.innerText ?? "";
+		const el = elementOrEvent?.currentTarget ?? elementOrEvent ?? getCommentBox();
+		const text = el ? el.textContent : "";
 		proofreadButton.disabled = text.trim().length === 0;
 	}
 
