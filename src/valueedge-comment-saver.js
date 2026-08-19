@@ -4,7 +4,7 @@
 	"use strict";
 
 	// ---- Proofread API configuration ----
-	const PROOFREAD_API_BASE_URL = "https://tbd_actual_server_url";
+	const PROOFREAD_API_BASE_URL = "https://jas-hcjt-server.otxlab.net/ve-inator-backend/api/v1";
 	const PROOFREAD_API_ENDPOINT = `${PROOFREAD_API_BASE_URL}/improve`;
 	const PROOFREAD_IMPROVEMENT_TEMPLATE = "proofread_v1";
 
