@@ -328,11 +328,6 @@
 			refreshBtn.disabled = true;
 			refreshBtn.textContent = "Improving…";
 
-			// Reset diff visibility state for the fresh result
-			diffVisible = true;
-			improvedPane.classList.remove("ve-diff-hidden");
-			diffToggleBtn.classList.add("ve-diff-toggle-on");
-
 			improvedPane.innerHTML = `
 				<div class="ve-proofread-loading">
 					<span class="ve-proofread-spinner"></span> ${selectedTitle}…
