@@ -143,49 +143,30 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	border-bottom: 1px solid #e8e8e8;
 	background: #fff;
 	border-radius: 12px 12px 0 0;
-	gap: 16px;
 }
 
-/* Left group: title + subtitle */
-.ve-improve-header-left {
-	flex: 1;
-	min-width: 0;
+/* Improved pane header cell: label left, controls right */
+.ve-improved-header-cell {
+	justify-content: space-between;
 }
 
-/* Right group: template dropdown + close button */
-.ve-improve-header-right {
+/* Inline row: dropdown + Improve again button */
+.ve-improved-controls {
 	display: flex;
 	align-items: center;
-	gap: 12px;
-	flex-shrink: 0;
-}
-
-/* Template selector group */
-.ve-improve-template-group {
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-}
-
-.ve-improve-template-label {
-	font-size: 0.68em;
-	color: #999;
-	font-weight: 500;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
-	line-height: 1;
+	gap: 8px;
 }
 
 .ve-improve-template-select {
 	font-size: 0.88em;
-	padding: 5px 28px 5px 10px;
+	padding: 5px 8px;
 	border: 1.5px solid #d1d5db;
 	border-radius: 6px;
 	background: #fff;
 	color: #111;
 	cursor: pointer;
 	appearance: auto;
-	min-width: 140px;
+	min-width: 130px;
 	transition: border-color 0.15s;
 }
 .ve-improve-template-select:focus {

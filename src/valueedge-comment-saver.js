@@ -189,33 +189,30 @@
 		overlay.innerHTML = `
 			<div class="ve-proofread-modal" role="dialog" aria-modal="true" aria-labelledby="ve-proofread-title">
 				<div class="ve-proofread-modal-header">
-					<div class="ve-improve-header-left">
+					<div>
 						<span id="ve-proofread-title" class="ve-proofread-title">Improve Comment</span>
 						<div class="ve-proofread-subtitle">provided by ValueEdge Beautifier</div>
 					</div>
-					<div class="ve-improve-header-right">
-						<div class="ve-improve-template-group">
-							<label class="ve-improve-template-label" for="ve-improve-template-select">Improvement type</label>
-							<select id="ve-improve-template-select" class="ve-improve-template-select" disabled>
-								<option value="">Loading…</option>
-							</select>
-						</div>
-						<button class="ve-proofread-close-x" id="ve-proofread-close-x" title="Close">&times;</button>
-					</div>
+					<button class="ve-proofread-close-x" id="ve-proofread-close-x" title="Close">&times;</button>
 				</div>
 				<div class="ve-proofread-modal-body">
 					<div class="ve-proofread-panes-header">
 						<div class="ve-proofread-pane-header-cell">
 							<span class="ve-proofread-pane-label">Original</span>
-							<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-run with selected improvement type" disabled>Improve again</button>
 						</div>
-						<div class="ve-proofread-pane-header-cell">
+						<div class="ve-proofread-pane-header-cell ve-improved-header-cell">
 							<span class="ve-proofread-pane-label">Improved</span>
+							<div class="ve-improved-controls">
+								<select id="ve-improve-template-select" class="ve-improve-template-select" disabled>
+									<option value="">Loading…</option>
+								</select>
+								<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-run with selected improvement type" disabled>Improve again</button>
+							</div>
 						</div>
 					</div>
 					<div class="ve-proofread-panes-row">
 						<div id="ve-proofread-original-content" class="ve-proofread-content" contenteditable="true" spellcheck="true" data-placeholder="Start writing your comment…"></div>
-						<div id="ve-proofread-improved-content" class="ve-proofread-content ve-proofread-improved-pane" contenteditable="true" spellcheck="true" data-placeholder="Select an improvement type and click Improve again."></div>
+						<div id="ve-proofread-improved-content" class="ve-proofread-content ve-proofread-improved-pane" contenteditable="false" spellcheck="false" data-placeholder="Select an improvement type to see improvements here."></div>
 					</div>
 				</div>
 				<div class="ve-proofread-modal-footer">
@@ -343,6 +340,11 @@
 			}
 			templateSelect.disabled = false;
 			syncRefreshBtn();
+
+			// Auto-trigger when the user changes the template
+			templateSelect.addEventListener("change", () => {
+				if (!isPaneEmpty(originalPane)) runImprove();
+			});
 
 			// Auto-trigger if the comment box already had content
 			if (!isPaneEmpty(originalPane)) {
