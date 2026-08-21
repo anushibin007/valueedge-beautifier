@@ -435,16 +435,19 @@
 		)?.parentElement;
 		if (viaAddBtn) return viaAddBtn;
 
-		// Edit-existing-comment flow: look for the action row inside the editing div.
-		// The .mqm-editing-comment-div contains the froala writing wrapper and,
-		// as a sibling, the Save/Cancel action bar row.
+		// Edit-existing-comment flow: find the native Save/Cancel button row.
+		// The Save/Cancel buttons are siblings of the froala writing container
+		// inside .mqm-editing-comment-div. Find the Save button that is NOT
+		// inside the froala toolbar (not .fr-toolbar), then use its parent.
 		const editingDiv = document.querySelector(".mqm-editing-comment-div");
 		if (editingDiv) {
-			// Prefer an explicit action-bar child; fall back to the editing div itself
-			// so buttons are prepended before whatever controls exist there.
-			const actionBar = editingDiv.querySelector(".alm-comment-action-bar")
-				|| editingDiv.querySelector("[data-aid='comments-pane-add-new-comment-writing-state']");
-			return actionBar || editingDiv;
+			// Look for a <button> with text "Save" that is outside the froala toolbar
+			const saveBtn = Array.from(editingDiv.querySelectorAll("button")).find(
+				(btn) => btn.textContent.trim() === "Save" && !btn.closest(".fr-toolbar")
+			);
+			if (saveBtn) return saveBtn.parentElement;
+			// Fallback: return the editing div — buttons will still show, just at top
+			return editingDiv;
 		}
 
 		return null;
