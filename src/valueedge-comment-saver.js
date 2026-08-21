@@ -103,6 +103,39 @@
 	let proofreadButton = null;
 	let lastSavedDisplay = null;
 
+	// ---- HTML-aware word-level diff highlighter ----
+	// Preserves the block-level HTML structure from rawHtml (ul, li, p, etc.)
+	// and applies word-level diff annotation within each matched block element.
+	function buildHtmlAwareDiff(originalHtml, rawHtml) {
+		const origDiv = document.createElement("div");
+		origDiv.innerHTML = originalHtml;
+		const impDiv = document.createElement("div");
+		impDiv.innerHTML = rawHtml;
+
+		// Collect innermost block-level elements that hold visible text
+		function collectBlocks(root) {
+			const blocks = Array.from(
+				root.querySelectorAll("p, li, td, th, h1, h2, h3, h4, h5, h6, blockquote")
+			);
+			// Fall back to root itself if no block elements found (plain text / inline-only)
+			return blocks.length > 0 ? blocks : [root];
+		}
+
+		const origBlocks = collectBlocks(origDiv);
+		const impBlocks  = collectBlocks(impDiv);
+
+		// Pair improved blocks with original blocks by index.
+		// Extra improved blocks (new paragraphs/list items) are treated as fully inserted.
+		impBlocks.forEach((impBlock, i) => {
+			const origText = origBlocks[i] ? origBlocks[i].textContent : "";
+			// Replace only the text content of each block with the diff-annotated version,
+			// keeping the surrounding block tag and its attributes intact.
+			impBlock.innerHTML = buildWordDiffHtml(origText, impBlock.textContent);
+		});
+
+		return impDiv.innerHTML;
+	}
+
 	// ---- Word-level diff highlighter ----
 	// Tokenises two plain-text strings into words+whitespace tokens, computes an
 	// LCS-based diff, and returns an HTML string with <ins> around added/changed
@@ -321,15 +354,8 @@
 				})
 				.then((data) => {
 					const rawHtml = data.improved_comment_data || "";
-					// Build a plain-text diff view over the improved pane
-					const originalText = originalPane.textContent;
-					// Parse the returned HTML to extract plain text for diffing
-					const tmp = document.createElement("div");
-					tmp.innerHTML = rawHtml;
-					const improvedText = tmp.textContent;
-					// Show the diff-highlighted version; "Use improved" still pastes the
-					// raw HTML so rich-text formatting is preserved in the comment box.
-					improvedPane.innerHTML = buildWordDiffHtml(originalText, improvedText);
+					// Render the diff while preserving the improved HTML block structure
+					improvedPane.innerHTML = buildHtmlAwareDiff(originalPane.innerHTML, rawHtml);
 					improvedPane.dataset.rawHtml = rawHtml;
 				})
 				.catch((err) => {
