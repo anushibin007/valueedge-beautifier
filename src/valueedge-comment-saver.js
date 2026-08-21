@@ -103,6 +103,57 @@
 	let proofreadButton = null;
 	let lastSavedDisplay = null;
 
+	// ---- Word-level diff highlighter ----
+	// Tokenises two plain-text strings into words+whitespace tokens, computes an
+	// LCS-based diff, and returns an HTML string with <ins> around added/changed
+	// tokens and <del> around removed ones.
+	function buildWordDiffHtml(originalText, improvedText) {
+		// Tokenise: keep whitespace as its own tokens so spacing is preserved
+		function tokenise(str) {
+			return str.match(/\S+|\s+/g) || [];
+		}
+
+		const a = tokenise(originalText);
+		const b = tokenise(improvedText);
+
+		// Build LCS table
+		const m = a.length, n = b.length;
+		const dp = Array.from({ length: m + 1 }, () => new Int32Array(n + 1));
+		for (let i = m - 1; i >= 0; i--) {
+			for (let j = n - 1; j >= 0; j--) {
+				dp[i][j] = a[i] === b[j]
+					? dp[i + 1][j + 1] + 1
+					: Math.max(dp[i + 1][j], dp[i][j + 1]);
+			}
+		}
+
+		// Walk the diff
+		const parts = [];
+		let i = 0, j = 0;
+		while (i < m || j < n) {
+			if (i < m && j < n && a[i] === b[j]) {
+				parts.push({ type: "eq", text: b[j] });
+				i++; j++;
+			} else if (j < n && (i >= m || dp[i][j + 1] >= dp[i + 1][j])) {
+				parts.push({ type: "ins", text: b[j] });
+				j++;
+			} else {
+				parts.push({ type: "del", text: a[i] });
+				i++;
+			}
+		}
+
+		// Render: only show the improved pane (ins/del), escape HTML in tokens
+		function esc(t) {
+			return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+		}
+		return parts.map((p) => {
+			if (p.type === "eq")  return esc(p.text);
+			if (p.type === "ins") return `<ins class="ve-diff-ins">${esc(p.text)}</ins>`;
+			if (p.type === "del") return `<del class="ve-diff-del">${esc(p.text)}</del>`;
+		}).join("");
+	}
+
 	// ---- Improve Modal Logic ----
 
 	// Fetch available improvement templates from the backend.
@@ -214,7 +265,9 @@
 		});
 
 		overlay.querySelector("#ve-proofread-use-improved").addEventListener("click", () => {
-			setCommentValue(improvedPane.innerHTML);
+			// Use the original rich-text HTML, not the diff markup
+			const rawHtml = improvedPane.dataset.rawHtml;
+			setCommentValue(rawHtml !== undefined ? rawHtml : improvedPane.innerHTML);
 			closeModal();
 		});
 
@@ -247,7 +300,17 @@
 					return res.json();
 				})
 				.then((data) => {
-					improvedPane.innerHTML = data.improved_comment_data || "";
+					const rawHtml = data.improved_comment_data || "";
+					// Build a plain-text diff view over the improved pane
+					const originalText = originalPane.textContent;
+					// Parse the returned HTML to extract plain text for diffing
+					const tmp = document.createElement("div");
+					tmp.innerHTML = rawHtml;
+					const improvedText = tmp.textContent;
+					// Show the diff-highlighted version; "Use improved" still pastes the
+					// raw HTML so rich-text formatting is preserved in the comment box.
+					improvedPane.innerHTML = buildWordDiffHtml(originalText, improvedText);
+					improvedPane.dataset.rawHtml = rawHtml;
 				})
 				.catch((err) => {
 					improvedPane.innerHTML = `<span class="ve-proofread-error">⚠️ Failed to improve: ${err.message}</span>`;

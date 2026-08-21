@@ -378,6 +378,23 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	color: #c0392b;
 }
 
+/* Word-level diff highlights in the improved pane */
+ins.ve-diff-ins {
+	text-decoration: none;
+	background: #d1fae5;
+	color: #065f46;
+	border-radius: 2px;
+	padding: 0 1px;
+}
+
+del.ve-diff-del {
+	background: #fee2e2;
+	color: #991b1b;
+	border-radius: 2px;
+	padding: 0 1px;
+	text-decoration: line-through;
+}
+
 /* Footer */
 .ve-proofread-modal-footer {
 	display: flex;
