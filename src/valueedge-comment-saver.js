@@ -422,12 +422,38 @@
 		proofreadButton.style.display = reachable ? "" : "none";
 	}
 
+	// Returns the button container for either a new comment or an edit-existing
+	// comment writing state. The new-comment state has a sibling "Add comment"
+	// button with data-aid='comments-pane-add-new-comment-button'; the edit state
+	// has no such button but its writing div carries the class
+	// 'mqm-editing-comment-div'. Both share the same data-aid on the writing
+	// wrapper that contains the froala editor and the Save/Cancel row.
+	function findButtonContainer() {
+		// New-comment flow: the "Add comment" button's parent holds Save/Cancel/etc.
+		const viaAddBtn = document.querySelector(
+			"[data-aid='comments-pane-add-new-comment-button']"
+		)?.parentElement;
+		if (viaAddBtn) return viaAddBtn;
+
+		// Edit-existing-comment flow: look for the action row inside the editing div.
+		// The .mqm-editing-comment-div contains the froala writing wrapper and,
+		// as a sibling, the Save/Cancel action bar row.
+		const editingDiv = document.querySelector(".mqm-editing-comment-div");
+		if (editingDiv) {
+			// Prefer an explicit action-bar child; fall back to the editing div itself
+			// so buttons are prepended before whatever controls exist there.
+			const actionBar = editingDiv.querySelector(".alm-comment-action-bar")
+				|| editingDiv.querySelector("[data-aid='comments-pane-add-new-comment-writing-state']");
+			return actionBar || editingDiv;
+		}
+
+		return null;
+	}
+
 	// Create and insert buttons
 	function createAndInsertButtons() {
 		// Find the button container
-		const buttonContainer = document.querySelector(
-			"[data-aid='comments-pane-add-new-comment-button']"
-		)?.parentElement;
+		const buttonContainer = findButtonContainer();
 
 		if (!buttonContainer || buttonsAdded) {
 			return;
@@ -512,9 +538,7 @@
 
 		// Set up MutationObserver to watch for comment pane appearance/disappearance
 		const observer = new MutationObserver(() => {
-			const buttonContainer = document.querySelector(
-				"[data-aid='comments-pane-add-new-comment-button']"
-			)?.parentElement;
+			const buttonContainer = findButtonContainer();
 
 			if (buttonContainer && !buttonsAdded) {
 				// Comment pane appeared, add buttons (healthcheck fires inside)
