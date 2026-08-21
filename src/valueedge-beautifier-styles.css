@@ -376,22 +376,85 @@ del.ve-diff-del {
 	text-decoration: line-through;
 }
 
-/* Diff visibility toggle button — floats to the left of the footer */
-.ve-diff-toggle-btn {
-	margin-right: auto;
-	font-size: 0.82em;
-	padding: 5px 12px;
-	border-radius: 6px;
-	border: 1px solid #d1d5db;
-	background: #fff;
-	color: #555;
-	cursor: pointer;
-	transition: background 0.12s, border-color 0.12s, color 0.12s;
+/* Floating "Show diff" toggle inside the improved pane — bottom-right corner */
+.ve-improved-pane-wrap {
+	flex: 1;
+	min-width: 0;
+	position: relative;
+	display: flex;
 }
-.ve-diff-toggle-btn:hover {
-	background: #f5f5f5;
-	border-color: #aaa;
-	color: #111;
+
+/* The toggle pill: absolute bottom-right of the wrap */
+.ve-diff-toggle-wrap {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	cursor: pointer;
+	user-select: none;
+	background: rgba(255, 255, 255, 0.92);
+	backdrop-filter: blur(4px);
+	border: 1px solid #d1d5db;
+	border-radius: 20px;
+	padding: 4px 10px 4px 8px;
+	box-shadow: 0 1px 6px rgba(0,0,0,0.10);
+	transition: border-color 0.15s, box-shadow 0.15s;
+	z-index: 2;
+}
+.ve-diff-toggle-wrap:hover {
+	border-color: #2563eb;
+	box-shadow: 0 1px 8px rgba(37,99,235,0.13);
+}
+
+.ve-diff-toggle-label {
+	font-size: 0.75em;
+	font-weight: 500;
+	color: #555;
+	line-height: 1;
+}
+
+/* CSS toggle switch track */
+.ve-diff-switch {
+	display: inline-flex;
+	align-items: center;
+	width: 28px;
+	height: 16px;
+	border-radius: 8px;
+	background: #d1d5db;
+	position: relative;
+	transition: background 0.2s;
+	flex-shrink: 0;
+}
+
+/* Thumb */
+.ve-diff-switch-thumb {
+	position: absolute;
+	left: 2px;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+	transition: left 0.2s, background 0.2s;
+}
+
+/* ON state (diff visible) */
+.ve-diff-toggle-on .ve-diff-switch {
+	background: #2563eb;
+}
+.ve-diff-toggle-on .ve-diff-switch-thumb {
+	left: 14px;
+}
+.ve-diff-toggle-on .ve-diff-toggle-label {
+	color: #2563eb;
+}
+
+/* Improved pane must fill its wrap */
+.ve-improved-pane-wrap .ve-proofread-content {
+	flex: 1;
+	min-width: 0;
 }
 
 /* When diff is hidden, collapse ins/del to plain unstyled text */

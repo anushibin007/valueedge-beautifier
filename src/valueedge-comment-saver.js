@@ -212,11 +212,18 @@
 					</div>
 					<div class="ve-proofread-panes-row">
 						<div id="ve-proofread-original-content" class="ve-proofread-content" contenteditable="true" spellcheck="true" data-placeholder="Start writing your comment…"></div>
-						<div id="ve-proofread-improved-content" class="ve-proofread-content ve-proofread-improved-pane" contenteditable="false" spellcheck="false" data-placeholder="Select an improvement type to see improvements here."></div>
+						<div class="ve-improved-pane-wrap">
+							<div id="ve-proofread-improved-content" class="ve-proofread-content ve-proofread-improved-pane" contenteditable="false" spellcheck="false" data-placeholder="Select an improvement type to see improvements here."></div>
+							<label class="ve-diff-toggle-wrap" id="ve-diff-toggle" title="Toggle inline diff highlights">
+								<span class="ve-diff-toggle-label">Show diff</span>
+								<span class="ve-diff-switch">
+									<span class="ve-diff-switch-thumb"></span>
+								</span>
+							</label>
+						</div>
 					</div>
 				</div>
 				<div class="ve-proofread-modal-footer">
-					<button class="ve-diff-toggle-btn" id="ve-diff-toggle" title="Toggle inline diff highlights">Hide diff</button>
 					<button class="ve-proofread-footer-btn ve-proofread-cancel-btn" id="ve-proofread-cancel">Cancel</button>
 					<button class="ve-proofread-footer-btn ve-proofread-use-improved-btn" id="ve-proofread-use-improved">Use improved</button>
 				</div>
@@ -272,10 +279,11 @@
 		// Diff toggle — show/hide <ins>/<del> highlights in the improved pane
 		const diffToggleBtn = overlay.querySelector("#ve-diff-toggle");
 		let diffVisible = true;
+		diffToggleBtn.classList.add("ve-diff-toggle-on"); // start: diff visible
 		diffToggleBtn.addEventListener("click", () => {
 			diffVisible = !diffVisible;
 			improvedPane.classList.toggle("ve-diff-hidden", !diffVisible);
-			diffToggleBtn.textContent = diffVisible ? "Hide diff" : "Show diff";
+			diffToggleBtn.classList.toggle("ve-diff-toggle-on", diffVisible);
 		});
 
 		// ---- Improve API call (reusable) ----
@@ -290,7 +298,7 @@
 			// Reset diff visibility state for the fresh result
 			diffVisible = true;
 			improvedPane.classList.remove("ve-diff-hidden");
-			diffToggleBtn.textContent = "Hide diff";
+			diffToggleBtn.classList.add("ve-diff-toggle-on");
 
 			improvedPane.innerHTML = `
 				<div class="ve-proofread-loading">
