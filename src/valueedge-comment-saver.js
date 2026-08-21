@@ -3,11 +3,12 @@
 (function () {
 	"use strict";
 
-	// ---- Proofread API configuration ----
+	// ---- Improve API configuration ----
 	const PROOFREAD_API_BASE_URL = "https://jas-hcjt-server.otxlab.net/ve-inator-backend/api/v1";
 	const PROOFREAD_API_ENDPOINT = `${PROOFREAD_API_BASE_URL}/improve`;
 	const PROOFREAD_HEALTHCHECK_ENDPOINT = `${PROOFREAD_API_BASE_URL}/config/`;
-	const PROOFREAD_IMPROVEMENT_TEMPLATE = "proofread_v1";
+	const IMPROVE_TEMPLATES_ENDPOINT = `${PROOFREAD_API_BASE_URL}/improve/templates`;
+	const PROOFREAD_IMPROVEMENT_TEMPLATE = "proofread_v1"; // fallback default
 
 	// Define unique localStorage key name
 
@@ -102,9 +103,31 @@
 	let proofreadButton = null;
 	let lastSavedDisplay = null;
 
-	// ---- Proofread Modal Logic ----
+	// ---- Improve Modal Logic ----
 
-	function createProofreadModal() {
+	// Fetch available improvement templates from the backend.
+	// Returns an array of { id, title, enabled, description } objects.
+	// Falls back to a built-in default if the endpoint is unreachable.
+	async function fetchImproveTemplates() {
+		try {
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => controller.abort(), 5000);
+			const res = await fetch(IMPROVE_TEMPLATES_ENDPOINT, {
+				method: "GET",
+				signal: controller.signal,
+			});
+			clearTimeout(timeoutId);
+			if (!res.ok) throw new Error(`HTTP ${res.status}`);
+			const data = await res.json();
+			// Keep only enabled templates
+			return data.filter((t) => t.enabled !== false);
+		} catch {
+			// Fallback so the modal is still usable when templates endpoint is down
+			return [{ id: PROOFREAD_IMPROVEMENT_TEMPLATE, title: "Proofread", enabled: true, description: "Proofreads the given input and fixes spelling and grammatical issues" }];
+		}
+	}
+
+	async function createImproveModal() {
 		const existingModal = document.getElementById("ve-proofread-modal-overlay");
 		if (existingModal) existingModal.remove();
 
@@ -115,17 +138,25 @@
 		overlay.innerHTML = `
 			<div class="ve-proofread-modal" role="dialog" aria-modal="true" aria-labelledby="ve-proofread-title">
 				<div class="ve-proofread-modal-header">
-					<div>
-						<span id="ve-proofread-title" class="ve-proofread-title">✨ Proofread Comment</span>
+					<div class="ve-improve-header-left">
+						<span id="ve-proofread-title" class="ve-proofread-title">Improve Comment</span>
 						<div class="ve-proofread-subtitle">provided by ValueEdge Beautifier</div>
 					</div>
-					<button class="ve-proofread-close-x" id="ve-proofread-close-x" title="Close">&times;</button>
+					<div class="ve-improve-header-right">
+						<div class="ve-improve-template-group">
+							<label class="ve-improve-template-label" for="ve-improve-template-select">Improvement type</label>
+							<select id="ve-improve-template-select" class="ve-improve-template-select" disabled>
+								<option value="">Loading…</option>
+							</select>
+						</div>
+						<button class="ve-proofread-close-x" id="ve-proofread-close-x" title="Close">&times;</button>
+					</div>
 				</div>
 				<div class="ve-proofread-modal-body">
 					<div class="ve-proofread-panes-header">
 						<div class="ve-proofread-pane-header-cell">
 							<span class="ve-proofread-pane-label">Original</span>
-							<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-improve using current Original text" disabled>🔄 Improve again</button>
+							<button class="ve-proofread-refresh-btn" id="ve-proofread-refresh" title="Re-run with selected improvement type" disabled>Improve again</button>
 						</div>
 						<div class="ve-proofread-pane-header-cell">
 							<span class="ve-proofread-pane-label">Improved</span>
@@ -133,7 +164,7 @@
 					</div>
 					<div class="ve-proofread-panes-row">
 						<div id="ve-proofread-original-content" class="ve-proofread-content" contenteditable="true" spellcheck="true" data-placeholder="Start writing your comment…"></div>
-						<div id="ve-proofread-improved-content" class="ve-proofread-content ve-proofread-improved-pane" contenteditable="true" spellcheck="true" data-placeholder="Click on the 🔄 Improve again button to see improvements here."></div>
+						<div id="ve-proofread-improved-content" class="ve-proofread-content ve-proofread-improved-pane" contenteditable="true" spellcheck="true" data-placeholder="Select an improvement type and click Improve again."></div>
 					</div>
 				</div>
 				<div class="ve-proofread-modal-footer">
@@ -148,6 +179,7 @@
 		const originalPane = overlay.querySelector("#ve-proofread-original-content");
 		const improvedPane = overlay.querySelector("#ve-proofread-improved-content");
 		const refreshBtn = overlay.querySelector("#ve-proofread-refresh");
+		const templateSelect = overlay.querySelector("#ve-improve-template-select");
 
 		// Populate original content from the comment box (may be empty)
 		originalPane.innerHTML = getCommentValue();
@@ -156,21 +188,18 @@
 		function isPaneEmpty(pane) {
 			const text = pane.textContent.trim();
 			if (text.length > 0) return false;
-			// textContent is empty but there may still be <br> or empty <p> nodes
 			return true;
 		}
 
-		// If the comment box was empty (just <br>/<p><br></p>), clear the pane so
-		// the placeholder shows and the element is considered :empty by CSS
 		if (isPaneEmpty(originalPane)) {
 			originalPane.innerHTML = "";
 		}
 
-		// Enable "Improve again" only when Original pane has real content
+		// Enable "Improve again" only when Original pane has real content and templates loaded
 		function syncRefreshBtn() {
-			refreshBtn.disabled = isPaneEmpty(originalPane);
+			refreshBtn.disabled = isPaneEmpty(originalPane) || templateSelect.disabled;
 		}
-		syncRefreshBtn(); // set initial state
+		syncRefreshBtn();
 		originalPane.addEventListener("input", syncRefreshBtn);
 
 		// Close helpers
@@ -180,30 +209,27 @@
 
 		overlay.querySelector("#ve-proofread-close-x").addEventListener("click", closeModal);
 		overlay.querySelector("#ve-proofread-cancel").addEventListener("click", closeModal);
-
-		// Close on backdrop click
 		overlay.addEventListener("click", (e) => {
 			if (e.target === overlay) closeModal();
 		});
 
-		// "Use improved" — write improved pane HTML back to comment box
 		overlay.querySelector("#ve-proofread-use-improved").addEventListener("click", () => {
 			setCommentValue(improvedPane.innerHTML);
 			closeModal();
 		});
 
-		// ---- Proofread API call (reusable) ----
-		function runProofread() {
-			// Guard: do not call the backend if there is nothing to improve
+		// ---- Improve API call (reusable) ----
+		function runImprove() {
 			if (isPaneEmpty(originalPane)) return;
+			const selectedTemplate = templateSelect.value || PROOFREAD_IMPROVEMENT_TEMPLATE;
+			const selectedTitle = templateSelect.options[templateSelect.selectedIndex]?.text || "Improving";
 
 			refreshBtn.disabled = true;
-			refreshBtn.textContent = "⏳ Improving…";
+			refreshBtn.textContent = "Improving…";
 
-			// Clear improved pane and show spinner
 			improvedPane.innerHTML = `
 				<div class="ve-proofread-loading">
-					<span class="ve-proofread-spinner"></span> Proofreading…
+					<span class="ve-proofread-spinner"></span> ${selectedTitle}…
 				</div>`;
 
 			const commentHTML = originalPane.innerHTML;
@@ -213,7 +239,7 @@
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					input_comment_text: commentHTML,
-					improvement_template: PROOFREAD_IMPROVEMENT_TEMPLATE,
+					improvement_template: selectedTemplate,
 				}),
 			})
 				.then((res) => {
@@ -224,21 +250,42 @@
 					improvedPane.innerHTML = data.improved_comment_data || "";
 				})
 				.catch((err) => {
-					improvedPane.innerHTML = `<span class="ve-proofread-error">⚠️ Failed to proofread: ${err.message}</span>`;
-					console.error("Proofread API error:", err);
+					improvedPane.innerHTML = `<span class="ve-proofread-error">⚠️ Failed to improve: ${err.message}</span>`;
+					console.error("Improve API error:", err);
 				})
 				.finally(() => {
 					refreshBtn.disabled = false;
-					refreshBtn.textContent = "🔄 Improve again";
+					refreshBtn.textContent = "Improve again";
 				});
 		}
 
-		refreshBtn.addEventListener("click", runProofread);
+		refreshBtn.addEventListener("click", runImprove);
 
-		// Auto-trigger if the comment box already had content
-		if (!isPaneEmpty(originalPane)) {
-			runProofread();
-		}
+		// Load templates and populate dropdown, then auto-run if content exists
+		fetchImproveTemplates().then((templates) => {
+			templateSelect.innerHTML = "";
+			if (templates.length === 0) {
+				const opt = document.createElement("option");
+				opt.value = PROOFREAD_IMPROVEMENT_TEMPLATE;
+				opt.textContent = "Proofread";
+				templateSelect.appendChild(opt);
+			} else {
+				templates.forEach((t) => {
+					const opt = document.createElement("option");
+					opt.value = t.id;
+					opt.textContent = t.title;
+					if (t.description) opt.title = t.description;
+					templateSelect.appendChild(opt);
+				});
+			}
+			templateSelect.disabled = false;
+			syncRefreshBtn();
+
+			// Auto-trigger if the comment box already had content
+			if (!isPaneEmpty(originalPane)) {
+				runImprove();
+			}
+		});
 	}
 
 	// ---- Backend healthcheck ----
@@ -259,9 +306,7 @@
 		}
 	}
 
-	// Show or hide the Proofread button based on backend availability.
-	// Called once after buttons are inserted, and again whenever the comment
-	// pane re-appears so the check stays fresh.
+	// Show or hide the Improve button based on backend availability.
 	async function refreshProofreadButtonVisibility() {
 		if (!proofreadButton) return;
 		const reachable = await isBackendReachable();
@@ -279,31 +324,41 @@
 			return;
 		}
 
+		// SVG icons — inline so no external assets needed
+		const ICON_SAVE = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>`;
+		const ICON_RESTORE = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>`;
+		const ICON_IMPROVE = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.8a1 1 0 0 0 .6.6L20.3 11.3l-4.8 1.9a1 1 0 0 0-.6.6L13 19.3l-1.9-5.8a1 1 0 0 0-.6-.6L4.7 11l4.8-2a1 1 0 0 0 .6-.6L12 3z"/><path d="M5 3l.8 2.4a.4.4 0 0 0 .2.2L8.3 6.4 5.9 7.2a.4.4 0 0 0-.2.2L5 9.9 4.2 7.5a.4.4 0 0 0-.2-.2L1.7 6.6l2.4-.8a.4.4 0 0 0 .2-.2L5 3z"/></svg>`;
+
+		const ICON_BTN_CLASS = "button--flat button--default button--slim section margin-t--4px margin-r--4px ve-icon-btn";
+
 		// Create "Save Draft" button
 		saveButton = document.createElement("button");
-		saveButton.className =
-			"button--flat button--default button--slim section margin-t--4px margin-r--4px";
+		saveButton.className = ICON_BTN_CLASS;
 		saveButton.type = "button";
-		saveButton.textContent = "Save Draft";
+		saveButton.title = "Save Draft";
+		saveButton.setAttribute("aria-label", "Save Draft");
+		saveButton.innerHTML = ICON_SAVE;
 		saveButton.addEventListener("click", saveDraft);
 
 		// Create "Restore Draft" button
 		restoreButton = document.createElement("button");
-		restoreButton.className =
-			"button--flat button--default button--slim section margin-t--4px margin-r--4px";
+		restoreButton.className = ICON_BTN_CLASS;
 		restoreButton.type = "button";
-		restoreButton.textContent = "Restore Draft";
+		restoreButton.title = "Restore Draft";
+		restoreButton.setAttribute("aria-label", "Restore Draft");
+		restoreButton.innerHTML = ICON_RESTORE;
 		restoreButton.disabled = !hasSavedDraft();
 		restoreButton.addEventListener("click", restoreDraft);
 
-		// Create "Proofread" button — hidden until healthcheck confirms backend is up
+		// Create "Improve" button — hidden until healthcheck confirms backend is up
 		proofreadButton = document.createElement("button");
-		proofreadButton.className =
-			"button--flat button--default button--slim section margin-t--4px margin-r--4px";
+		proofreadButton.className = ICON_BTN_CLASS;
 		proofreadButton.type = "button";
-		proofreadButton.textContent = "✨ Proofread";
+		proofreadButton.title = "Improve";
+		proofreadButton.setAttribute("aria-label", "Improve");
+		proofreadButton.innerHTML = ICON_IMPROVE;
 		proofreadButton.style.display = "none"; // hidden until healthcheck passes
-		proofreadButton.addEventListener("click", createProofreadModal);
+		proofreadButton.addEventListener("click", createImproveModal);
 
 		// Create "Draft last saved" display element
 		lastSavedDisplay = document.createElement("span");

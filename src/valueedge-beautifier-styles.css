@@ -80,6 +80,34 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	color: transparent !important;
 }
 
+/* ===== Icon-only action buttons (Save Draft, Restore Draft, Improve) ===== */
+.ve-icon-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	padding: 0 !important;
+	border-radius: 6px;
+	color: #444;
+	background: transparent;
+	border: 1px solid transparent;
+	transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.ve-icon-btn:hover:not(:disabled) {
+	background: #f0f0f0;
+	border-color: #d0d0d0;
+	color: #111;
+}
+.ve-icon-btn:disabled {
+	opacity: 0.38;
+	cursor: not-allowed;
+}
+.ve-icon-btn svg {
+	display: block;
+	flex-shrink: 0;
+}
+
 /* ===== Proofread modal overlay ===== */
 .ve-proofread-overlay {
 	position: fixed;
@@ -115,6 +143,59 @@ Bootstrap theme items taken from https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/di
 	border-bottom: 1px solid #e8e8e8;
 	background: #fff;
 	border-radius: 12px 12px 0 0;
+	gap: 16px;
+}
+
+/* Left group: title + subtitle */
+.ve-improve-header-left {
+	flex: 1;
+	min-width: 0;
+}
+
+/* Right group: template dropdown + close button */
+.ve-improve-header-right {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-shrink: 0;
+}
+
+/* Template selector group */
+.ve-improve-template-group {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.ve-improve-template-label {
+	font-size: 0.68em;
+	color: #999;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	line-height: 1;
+}
+
+.ve-improve-template-select {
+	font-size: 0.88em;
+	padding: 5px 28px 5px 10px;
+	border: 1.5px solid #d1d5db;
+	border-radius: 6px;
+	background: #fff;
+	color: #111;
+	cursor: pointer;
+	appearance: auto;
+	min-width: 140px;
+	transition: border-color 0.15s;
+}
+.ve-improve-template-select:focus {
+	outline: none;
+	border-color: #2563eb;
+	box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+.ve-improve-template-select:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
 }
 
 .ve-proofread-title {
