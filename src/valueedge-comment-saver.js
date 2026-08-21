@@ -103,6 +103,32 @@
 	let proofreadButton = null;
 	let lastSavedDisplay = null;
 
+	// ---- Image strip / restore for backend calls ----
+	// Replaces every <img> in the HTML with a text placeholder so the backend
+	// never receives large base64 blobs or long server-side URLs.
+	// Returns { strippedHtml, images } where images is an ordered array of the
+	// original outerHTML strings for each extracted <img>.
+	function stripImages(html) {
+		const tmp = document.createElement("div");
+		tmp.innerHTML = html;
+		const images = [];
+		tmp.querySelectorAll("img").forEach((img) => {
+			const placeholder = document.createTextNode(`[[VE_IMG_${images.length}]]`);
+			images.push(img.outerHTML);
+			img.replaceWith(placeholder);
+		});
+		return { strippedHtml: tmp.innerHTML, images };
+	}
+
+	// Replaces [[VE_IMG_n]] placeholders in the response HTML back with the
+	// original <img> outerHTML strings (in order). Placeholders the backend
+	// echoed back are restored; any that are missing stay as-is.
+	function restoreImages(html, images) {
+		return html.replace(/\[\[VE_IMG_(\d+)\]\]/g, (match, idx) => {
+			return images[parseInt(idx, 10)] || match;
+		});
+	}
+
 	// ---- HTML-aware word-level diff highlighter ----
 	// Preserves the block-level HTML structure from rawHtml (ul, li, p, etc.)
 	// and applies word-level diff annotation within each matched block element.
@@ -333,13 +359,15 @@
 					<span class="ve-proofread-spinner"></span> ${selectedTitle}…
 				</div>`;
 
-			const commentHTML = originalPane.innerHTML;
+			// Strip images before sending — avoids sending large base64 blobs or
+			// long server-side URLs that cause backend timeouts.
+			const { strippedHtml, images } = stripImages(originalPane.innerHTML);
 
 			fetch(PROOFREAD_API_ENDPOINT, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					input_comment_text: commentHTML,
+					input_comment_text: strippedHtml,
 					improvement_template: selectedTemplate,
 				}),
 			})
@@ -348,9 +376,15 @@
 					return res.json();
 				})
 				.then((data) => {
-					const rawHtml = data.improved_comment_data || "";
-					// Render the diff while preserving the improved HTML block structure
-					improvedPane.innerHTML = buildHtmlAwareDiff(originalPane.innerHTML, rawHtml);
+					// Restore images from placeholders before rendering or storing
+					const rawHtml = restoreImages(data.improved_comment_data || "", images);
+					// Render diff against the original (with images stripped for text diff,
+					// but restore images in the final display HTML)
+					const strippedOriginal = images.length > 0 ? strippedHtml : originalPane.innerHTML;
+					const strippedImproved = stripImages(rawHtml).strippedHtml;
+					const diffHtml = buildHtmlAwareDiff(strippedOriginal, strippedImproved);
+					// Re-restore images in the diff output so they appear in the pane
+					improvedPane.innerHTML = restoreImages(diffHtml, images);
 					improvedPane.dataset.rawHtml = rawHtml;
 				})
 				.catch((err) => {
