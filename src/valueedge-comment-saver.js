@@ -216,6 +216,7 @@
 					</div>
 				</div>
 				<div class="ve-proofread-modal-footer">
+					<button class="ve-diff-toggle-btn" id="ve-diff-toggle" title="Toggle inline diff highlights">Hide diff</button>
 					<button class="ve-proofread-footer-btn ve-proofread-cancel-btn" id="ve-proofread-cancel">Cancel</button>
 					<button class="ve-proofread-footer-btn ve-proofread-use-improved-btn" id="ve-proofread-use-improved">Use improved</button>
 				</div>
@@ -268,6 +269,15 @@
 			closeModal();
 		});
 
+		// Diff toggle — show/hide <ins>/<del> highlights in the improved pane
+		const diffToggleBtn = overlay.querySelector("#ve-diff-toggle");
+		let diffVisible = true;
+		diffToggleBtn.addEventListener("click", () => {
+			diffVisible = !diffVisible;
+			improvedPane.classList.toggle("ve-diff-hidden", !diffVisible);
+			diffToggleBtn.textContent = diffVisible ? "Hide diff" : "Show diff";
+		});
+
 		// ---- Improve API call (reusable) ----
 		function runImprove() {
 			if (isPaneEmpty(originalPane)) return;
@@ -276,6 +286,11 @@
 
 			refreshBtn.disabled = true;
 			refreshBtn.textContent = "Improving…";
+
+			// Reset diff visibility state for the fresh result
+			diffVisible = true;
+			improvedPane.classList.remove("ve-diff-hidden");
+			diffToggleBtn.textContent = "Hide diff";
 
 			improvedPane.innerHTML = `
 				<div class="ve-proofread-loading">

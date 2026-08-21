@@ -376,6 +376,33 @@ del.ve-diff-del {
 	text-decoration: line-through;
 }
 
+/* Diff visibility toggle button — floats to the left of the footer */
+.ve-diff-toggle-btn {
+	margin-right: auto;
+	font-size: 0.82em;
+	padding: 5px 12px;
+	border-radius: 6px;
+	border: 1px solid #d1d5db;
+	background: #fff;
+	color: #555;
+	cursor: pointer;
+	transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.ve-diff-toggle-btn:hover {
+	background: #f5f5f5;
+	border-color: #aaa;
+	color: #111;
+}
+
+/* When diff is hidden, collapse ins/del to plain unstyled text */
+.ve-diff-hidden ins.ve-diff-ins,
+.ve-diff-hidden del.ve-diff-del {
+	all: unset;
+}
+.ve-diff-hidden del.ve-diff-del {
+	display: none;
+}
+
 /* Footer */
 .ve-proofread-modal-footer {
 	display: flex;
